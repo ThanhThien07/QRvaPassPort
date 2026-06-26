@@ -4,25 +4,34 @@
  * Antigravity - Premium AI Developer
  */
 
-// Cấu hình Database mặc định (tối ưu cho Laragon)
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'qrvapassport');
+// Cấu hình Database (Tự động thích ứng môi trường Local Laragon và Railway)
+$db_host = getenv('MYSQLHOST') ?: 'localhost';
+$db_user = getenv('MYSQLUSER') ?: 'root';
+$db_pass = getenv('MYSQLPASSWORD') !== false ? getenv('MYSQLPASSWORD') : '';
+$db_name = getenv('MYSQLDATABASE') ?: 'qrvapassport';
+$db_port = getenv('MYSQLPORT') ?: '3306';
+
+define('DB_HOST', $db_host);
+define('DB_USER', $db_user);
+define('DB_PASS', $db_pass);
+define('DB_NAME', $db_name);
+define('DB_PORT', $db_port);
 
 try {
-    // 1. Kết nối đến MySQL Server trước (chưa chọn DB) để tự động tạo database nếu chưa có
-    $pdo_init = new PDO("mysql:host=" . DB_HOST, DB_USER, DB_PASS, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
-    ]);
-    
-    // Tạo cơ sở dữ liệu nếu chưa tồn tại
-    $pdo_init->exec("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-    $pdo_init = null; // Đóng kết nối tạm thời
+    // 1. Tự động tạo database nếu đang ở môi trường local (Laragon/XAMPP)
+    if (DB_HOST === 'localhost' || DB_HOST === '127.0.0.1') {
+        $pdo_init = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT, DB_USER, DB_PASS, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
+        ]);
+        
+        // Tạo cơ sở dữ liệu nếu chưa tồn tại
+        $pdo_init->exec("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+        $pdo_init = null; // Đóng kết nối tạm thời
+    }
 
     // 2. Kết nối trực tiếp vào Database của dự án
-    $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS, [
+    $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"

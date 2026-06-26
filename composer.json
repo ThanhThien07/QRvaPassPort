@@ -1,0 +1,8 @@
+{
+    "name": "thanhthien07/qrva-passport",
+    "description": "QRvaPassPort electronic passport system",
+    "type": "project",
+    "require": {
+        "php": ">=8.0"
+    }
+}

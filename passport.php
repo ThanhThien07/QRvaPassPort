@@ -1,6 +1,6 @@
 <?php
 /**
- * QRvaPassPort - Personal Passport View & Export
+ * QRvaPassPort - Personal Passport, Invitation & Route View
  * Antigravity - Premium AI Developer
  */
 require_once 'config.php';
@@ -35,6 +35,9 @@ if (!$passport) {
     // Phân loại nhãn vai trò và màu sắc
     $role_label = ($role === 'student') ? 'Học Sinh' : 'Phụ Huynh';
     $theme_class = ($role === 'student') ? 'student' : 'parent';
+    
+    // Xác định mẫu lộ trình tương ứng
+    $route_image = ($role === 'student') ? 'anh/lotrinhsinhvien-final.png' : 'anh/lotrinhphuhuynh-final.png';
 }
 ?>
 <!DOCTYPE html>
@@ -42,7 +45,7 @@ if (!$passport) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Passport Cá Nhân - <?php echo htmlspecialchars($fullname ?? 'Lỗi'); ?></title>
+    <title>Passport & Vé Sự Kiện - <?php echo htmlspecialchars($fullname ?? 'Lỗi'); ?></title>
     <!-- CSS chính -->
     <link rel="stylesheet" href="assets/css/style.css">
     <!-- Font Awesome Icons -->
@@ -79,197 +82,147 @@ if (!$passport) {
             </div>
         <?php else: ?>
             
-            <!-- Màn hình hiển thị Passport thành công -->
+            <!-- Màn hình hiển thị Passport & Vé mời thành công -->
             <div class="passport-layout">
                 
-                <!-- BÊN TRÁI: KHU VỰC ĐỔI CHỦ ĐỀ VÀ HIỂN THỊ THẺ -->
+                <!-- BÊN TRÁI: KHU VỰC CHỌN TẤM VÉ VÀ HIỂN THỊ -->
                 <div class="passport-viewer">
                     
-                    <!-- Bộ chọn chủ đề (Theme Selector) -->
+                    <!-- Bộ chọn giữa Thư mời và Lộ trình (Tab Selector) -->
                     <div class="theme-selector-panel no-print">
-                        <button class="theme-tab active-<?php echo $theme_class; ?>" onclick="switchTheme('badge', this)">
-                            <i class="fa-solid fa-address-card"></i> Thẻ Đeo Sự Kiện
+                        <button class="theme-tab active-<?php echo $theme_class; ?>" onclick="switchTheme('thumoi', this)">
+                            <i class="fa-solid fa-envelope-open-text"></i> ✉️ Vé Thư Mời
                         </button>
-                        <button class="theme-tab" onclick="switchTheme('boarding', this)">
-                            <i class="fa-solid fa-ticket-simple"></i> Vé Máy Bay (Boarding)
-                        </button>
-                        <button class="theme-tab" onclick="switchTheme('ticket', this)">
-                            <i class="fa-solid fa-mask"></i> Vé Sự Kiện (Ticket)
-                        </button>
-                        <button class="theme-tab" onclick="switchTheme('classic', this)">
-                            <i class="fa-solid fa-credit-card"></i> Thẻ VIP (Classic)
+                        <button class="theme-tab" onclick="switchTheme('lotrinh', this)">
+                            <i class="fa-solid fa-map-location-dot"></i> 🗺️ Lộ Trình Tham Quan
                         </button>
                     </div>
 
-                    <!-- KHUNG CHỨA THẺ PASSPORT -->
-                    <div class="passport-card-wrapper">
+                    <!-- KHUNG CHỨA THẺ PASSPORT HOẠT ĐỘNG (Dùng biến CSS điều khiển vị trí) -->
+                    <div class="passport-card-wrapper" id="alignable-wrapper">
                         
-                        <!-- CHỦ ĐỀ 1: THẺ ĐEO SỰ KIỆN (FESTIVAL BADGE) - DỌC -->
-                        <div id="theme-badge" class="card-badge card-badge-<?php echo $theme_class; ?> passport-card-active">
-                            <div class="badge-header">
-                                <div class="badge-logo badge-logo-<?php echo $theme_class; ?>">
-                                    <i class="fa-solid fa-award"></i> THPT PHÙNG HƯNG
-                                </div>
-                                <div class="badge-title">PASSPORT SỰ KIỆN 2026</div>
-                            </div>
-
-                            <div class="badge-avatar-container">
-                                <img class="badge-avatar" src="<?php echo htmlspecialchars($avatar); ?>" alt="Avatar">
-                            </div>
-
-                            <div class="badge-info">
-                                <div class="badge-name"><?php echo htmlspecialchars($fullname); ?></div>
-                                <div class="badge-role-tag"><?php echo $role_label; ?></div>
-                                
-                                <div class="badge-details">
-                                    <div class="badge-detail-item">
-                                        <span>Lớp Học</span>
-                                        <strong><?php echo htmlspecialchars($student_class); ?></strong>
-                                    </div>
-                                    <?php if ($role === 'parent'): ?>
-                                        <div class="badge-detail-item">
-                                            <span>Phụ huynh của</span>
-                                            <strong><?php echo htmlspecialchars($student_name); ?></strong>
-                                        </div>
-                                    <?php endif; ?>
-                                    <div class="badge-detail-item">
-                                        <span>Liên hệ</span>
-                                        <strong><?php echo htmlspecialchars($phone); ?></strong>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- QR Code Slot -->
-                            <div class="badge-qr-box" id="qr-badge"></div>
+                        <!-- TẤM VÉ 1: THƯ MỜI THAM DỰ (Tương ứng file final-thumoi.png) -->
+                        <div id="theme-thumoi" class="ticket-card-container ticket-card-container-<?php echo $theme_class; ?> passport-card-active">
+                            <!-- Ảnh mẫu gốc từ thư mục anh -->
+                            <img class="ticket-template-img" src="anh/final-thumoi.png" alt="Vé Thư Mời" onerror="this.src='uploads/default.png'; alert('Không tìm thấy tệp anh/final-thumoi.png! Hệ thống sẽ dùng ảnh mặc định thay thế.');">
                             
-                            <div class="badge-footer-text">
-                                Vui lòng xuất trình thẻ khi tham gia sự kiện
+                            <!-- Họ tên đè lên (Overlay) -->
+                            <div class="overlay-element overlay-name-thumoi" id="overlay-tm-name">
+                                <?php echo htmlspecialchars($fullname); ?>
+                            </div>
+                            
+                            <!-- Mã QR Code đè lên (Overlay) -->
+                            <div class="overlay-element overlay-qr-thumoi" id="overlay-tm-qr">
+                                <!-- Chứa mã QR cá nhân sinh động -->
                             </div>
                         </div>
 
-                        <!-- CHỦ ĐỀ 2: VÉ MÁY BAY (BOARDING PASS) - NGANG (Ẩn mặc định) -->
-                        <div id="theme-boarding" class="card-boarding card-boarding-<?php echo $theme_class; ?>" style="display: none;">
-                            <!-- Phần thân chính (Main Pass) -->
-                            <div class="boarding-main">
-                                <div class="boarding-header">
-                                    <div class="boarding-logo"><i class="fa-solid fa-plane"></i> PHUNG HƯNG AIR</div>
-                                    <div class="boarding-pass-title">BOARDING PASS</div>
-                                </div>
-                                
-                                <div class="boarding-body">
-                                    <img class="boarding-avatar" src="<?php echo htmlspecialchars($avatar); ?>" alt="Avatar">
-                                    <div class="boarding-info">
-                                        <div class="boarding-name"><?php echo htmlspecialchars($fullname); ?></div>
-                                        <div class="boarding-fields">
-                                            <div class="boarding-field">
-                                                <span>Vai Trò / Role</span>
-                                                <strong><?php echo $role_label; ?></strong>
-                                            </div>
-                                            <div class="boarding-field">
-                                                <span>Lớp / Class</span>
-                                                <strong><?php echo htmlspecialchars($student_class); ?></strong>
-                                            </div>
-                                            <?php if ($role === 'parent'): ?>
-                                                <div class="boarding-field" style="grid-column: span 2;">
-                                                    <span>Phụ huynh học sinh / Child's Name</span>
-                                                    <strong><?php echo htmlspecialchars($student_name); ?></strong>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="boarding-footer">
-                                    <span>DESTINATION: FESTIVAL-2026</span>
-                                    <span>GATE: MAIN HALL</span>
-                                    <span>BOARDING: 08:00 AM</span>
-                                </div>
-                            </div>
+                        <!-- TẤM VÉ 2: LỘ TRÌNH THAM QUAN (Lọc theo vai trò HS/PH) -->
+                        <div id="theme-lotrinh" class="ticket-card-container ticket-card-container-<?php echo $theme_class; ?>" style="display: none;">
+                            <!-- Lộ trình tương ứng cho học sinh hoặc phụ huynh -->
+                            <img class="ticket-template-img" src="<?php echo htmlspecialchars($route_image); ?>" alt="Lộ Trình Tham Quan" onerror="this.src='uploads/default.png'; alert('Không tìm thấy tệp lộ trình tương ứng trong thư mục anh!');">
                             
-                            <!-- Cuống vé xé (Stub) -->
-                            <div class="boarding-stub">
-                                <div class="boarding-stub-title">STUB / CUỐNG VÉ</div>
-                                <div class="boarding-stub-qr" id="qr-boarding"></div>
-                                <div class="boarding-stub-code"><?php echo htmlspecialchars($passport['passport_code']); ?></div>
-                            </div>
-                        </div>
-
-                        <!-- CHỦ ĐỀ 3: VÉ SỰ KIỆN NEON (EVENT TICKET) - DỌC (Ẩn mặc định) -->
-                        <div id="theme-ticket" class="card-ticket card-ticket-<?php echo $theme_class; ?>" style="display: none;">
-                            <div class="ticket-top">
-                                <div class="ticket-event-name">NGÀY HỘI VĂN HÓA 2026</div>
-                                <div class="ticket-sub">VÉ VÀO CỔNG SỰ KIỆN</div>
-                                
-                                <div class="ticket-avatar-box">
-                                    <img class="ticket-avatar" src="<?php echo htmlspecialchars($avatar); ?>" alt="Avatar">
-                                </div>
-                                
-                                <div class="ticket-name"><?php echo htmlspecialchars($fullname); ?></div>
-                                <div class="ticket-role"><?php echo $role_label; ?></div>
-                                
-                                <div class="ticket-grid">
-                                    <div class="ticket-item">
-                                        <span>Lớp tham gia</span>
-                                        <strong><?php echo htmlspecialchars($student_class); ?></strong>
-                                    </div>
-                                    <div class="ticket-item">
-                                        <span>Mã Passport</span>
-                                        <strong><?php echo htmlspecialchars($passport['passport_code']); ?></strong>
-                                    </div>
-                                    <?php if ($role === 'parent'): ?>
-                                        <div class="ticket-item" style="grid-column: span 2; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.3rem; margin-top: 0.3rem;">
-                                            <span>Phụ huynh của học sinh: <strong><?php echo htmlspecialchars($student_name); ?></strong></span>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            
-                            <!-- Đường cắt răng cưa -->
-                            <div class="ticket-divider"></div>
-                            
-                            <div class="ticket-bottom">
-                                <div class="ticket-bottom-info">
-                                    <span>TỔ CHỨC BỞI</span>
-                                    <strong>ĐOÀN TRƯỜNG THPT</strong>
-                                </div>
-                                <div class="ticket-qr" id="qr-ticket"></div>
-                            </div>
-                        </div>
-
-                        <!-- CHỦ ĐỀ 4: THẺ VIP/ATM (CLASSIC CARD) - NGANG (Ẩn mặc định) -->
-                        <div id="theme-classic" class="card-classic card-classic-<?php echo $theme_class; ?>" style="display: none;">
-                            <div class="classic-header">
-                                <div class="classic-logo"><i class="fa-solid fa-credit-card"></i> DIGITAL VIP CARD</div>
-                                <div class="classic-chip"></div>
-                            </div>
-                            
-                            <div class="classic-body">
-                                <img class="classic-avatar" src="<?php echo htmlspecialchars($avatar); ?>" alt="Avatar">
-                                <div class="classic-info">
-                                    <div class="classic-code"><?php echo htmlspecialchars($passport['passport_code']); ?></div>
-                                    <div class="classic-name"><?php echo htmlspecialchars($fullname); ?></div>
-                                    <div style="font-size: 0.7rem; color: var(--student-primary); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">
-                                        <?php echo $role_label; ?>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="classic-footer">
-                                <div class="classic-details">
-                                    <div class="classic-detail-item">
-                                        <span>Lớp / Class</span>
-                                        <strong><?php echo htmlspecialchars($student_class); ?></strong>
-                                    </div>
-                                    <div class="classic-detail-item">
-                                        <span>Hạn Sử Dụng</span>
-                                        <strong>12/2026</strong>
-                                    </div>
-                                </div>
-                                <div class="classic-qr" id="qr-classic"></div>
+                            <!-- Họ tên đè lên Lộ trình -->
+                            <div class="overlay-element overlay-name-lotrinh" id="overlay-lt-name">
+                                <?php echo htmlspecialchars($fullname); ?>
                             </div>
                         </div>
 
                     </div>
+
+                    <!-- BẢNG ĐIỀU KHIỂN CĂN CHỈNH TỌA ĐỘ (CHỈ HIỂN THỊ TRÊN TRÌNH DUYỆT) -->
+                    <div class="alignment-panel no-print">
+                        <h4><i class="fa-solid fa-sliders-h" style="color: var(--<?php echo $theme_class; ?>-primary);"></i> Căn Chỉnh Vị Trí Chữ & QR Trên Thẻ (Dành cho BTC)</h4>
+                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1rem;">
+                            Kéo các thanh trượt để di chuyển Họ tên và Mã QR vào đúng ô trống trên ảnh mẫu của bạn. Hệ thống tự động lưu vị trí này cho các lần in sau!
+                        </p>
+
+                        <!-- Căn chỉnh cho Vé Thư Mời -->
+                        <div class="control-group" id="control-group-thumoi">
+                            <div class="control-group-title"><i class="fa-solid fa-envelope"></i> Cài đặt Vé Thư Mời</div>
+                            
+                            <!-- Họ tên Y -->
+                            <div class="slider-row">
+                                <label>Họ tên (Dọc):</label>
+                                <input type="range" id="slider-tm-name-top" min="0" max="100" value="52" oninput="updateAlignment()">
+                                <span id="val-tm-name-top">52%</span>
+                            </div>
+                            <!-- Họ tên X -->
+                            <div class="slider-row">
+                                <label>Họ tên (Ngang):</label>
+                                <input type="range" id="slider-tm-name-left" min="0" max="100" value="50" oninput="updateAlignment()">
+                                <span id="val-tm-name-left">50%</span>
+                            </div>
+                            <!-- Họ tên Size -->
+                            <div class="slider-row">
+                                <label>Cỡ chữ:</label>
+                                <input type="range" id="slider-tm-name-size" min="10" max="60" value="24" oninput="updateAlignment()">
+                                <span id="val-tm-name-size">24px</span>
+                            </div>
+                            <!-- Họ tên Color -->
+                            <div class="color-picker-row">
+                                <label><i class="fa-solid fa-palette"></i> Màu sắc Họ Tên:</label>
+                                <input type="color" id="color-tm-name" class="color-picker-input" value="#ffaa00" onchange="updateAlignment()">
+                            </div>
+
+                            <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.05); margin: 0.8rem 0;">
+
+                            <!-- QR Y -->
+                            <div class="slider-row">
+                                <label>Mã QR (Dọc):</label>
+                                <input type="range" id="slider-tm-qr-top" min="0" max="100" value="75" oninput="updateAlignment()">
+                                <span id="val-tm-qr-top">75%</span>
+                            </div>
+                            <!-- QR X -->
+                            <div class="slider-row">
+                                <label>Mã QR (Ngang):</label>
+                                <input type="range" id="slider-tm-qr-left" min="0" max="100" value="50" oninput="updateAlignment()">
+                                <span id="val-tm-qr-left">50%</span>
+                            </div>
+                            <!-- QR Size -->
+                            <div class="slider-row">
+                                <label>Cỡ ảnh QR:</label>
+                                <input type="range" id="slider-tm-qr-size" min="30" max="200" value="90" oninput="updateAlignment()">
+                                <span id="val-tm-qr-size">90px</span>
+                            </div>
+                        </div>
+
+                        <!-- Căn chỉnh cho Lộ Trình -->
+                        <div class="control-group" id="control-group-lotrinh" style="display: none;">
+                            <div class="control-group-title"><i class="fa-solid fa-map"></i> Cài đặt Lộ Trình Tham Quan</div>
+                            
+                            <!-- Họ tên Y -->
+                            <div class="slider-row">
+                                <label>Họ tên (Dọc):</label>
+                                <input type="range" id="slider-lt-name-top" min="0" max="100" value="15" oninput="updateAlignment()">
+                                <span id="val-lt-name-top">15%</span>
+                            </div>
+                            <!-- Họ tên X -->
+                            <div class="slider-row">
+                                <label>Họ tên (Ngang):</label>
+                                <input type="range" id="slider-lt-name-left" min="0" max="100" value="50" oninput="updateAlignment()">
+                                <span id="val-lt-name-left">50%</span>
+                            </div>
+                            <!-- Họ tên Size -->
+                            <div class="slider-row">
+                                <label>Cỡ chữ:</label>
+                                <input type="range" id="slider-lt-name-size" min="10" max="60" value="24" oninput="updateAlignment()">
+                                <span id="val-lt-name-size">24px</span>
+                            </div>
+                            <!-- Họ tên Color -->
+                            <div class="color-picker-row">
+                                <label><i class="fa-solid fa-palette"></i> Màu sắc Họ Tên:</label>
+                                <input type="color" id="color-lt-name" class="color-picker-input" value="#ffffff" onchange="updateAlignment()">
+                            </div>
+                        </div>
+
+                        <div style="text-align: right; margin-top: 1rem;">
+                            <button onclick="resetAlignment()" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem; background: rgba(239, 68, 68, 0.1); color: #f87171; border-color: rgba(239, 68, 68, 0.2);">
+                                <i class="fa-solid fa-rotate-left"></i> Khôi phục vị trí mặc định
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- BÊN PHẢI: THÔNG TIN CHI TIẾT VÀ NÚT TẢI VỀ -->
@@ -277,22 +230,19 @@ if (!$passport) {
                     
                     <!-- Hiển thị thông báo nếu vừa đăng ký xong -->
                     <?php if (isset($_GET['new']) && $_GET['new'] == 1): ?>
-                        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; padding: 1.2rem; border-radius: 16px; text-align: center; margin-bottom: 1rem;">
+                        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; padding: 1.2rem; border-radius: 16px; text-align: center; margin-bottom: 1.5rem;">
                             <div style="font-size: 2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-circle-check"></i></div>
                             <h4 style="font-size: 1.1rem; margin-bottom: 0.2rem;">Đăng Ký Thành Công!</h4>
-                            <p style="font-size: 0.8rem; color: var(--text-muted);">Passport của bạn đã được khởi tạo và lưu trữ an toàn.</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">Passport và thư mời của bạn đã được khởi tạo và lưu trữ.</p>
                         </div>
                     <?php endif; ?>
 
                     <h3><i class="fa-solid fa-circle-info text-gradient-<?php echo $theme_class; ?>"></i> Thông Tin Passport</h3>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.2rem;">
-                        Đây là thẻ cá nhân chính thức của bạn cho ngày hội. Vui lòng lưu trữ để quét mã khi tham gia các hoạt động.
-                    </p>
                     
-                    <ul class="meta-info-list">
+                    <ul class="meta-info-list" style="margin-bottom: 1.5rem;">
                         <li class="meta-info-item">
                             <span>Mã Passport:</span>
-                            <strong style="font-family: monospace; letter-spacing: 1px; color: var(--<?php echo $theme_class; ?>-primary);"><?php echo htmlspecialchars($passport['passport_code']); ?></strong>
+                            <strong style="font-family: monospace; letter-spacing: 1.5px; color: var(--<?php echo $theme_class; ?>-primary);"><?php echo htmlspecialchars($passport['passport_code']); ?></strong>
                         </li>
                         <li class="meta-info-item">
                             <span>Họ và Tên:</span>
@@ -316,21 +266,38 @@ if (!$passport) {
                             <span>Số điện thoại:</span>
                             <strong><?php echo htmlspecialchars($phone); ?></strong>
                         </li>
-                        <li class="meta-info-item">
-                            <span>Ngày đăng ký:</span>
-                            <strong><?php echo $created_at; ?></strong>
-                        </li>
                     </ul>
 
-                    <div style="display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem;" class="no-print">
-                        <button onclick="downloadPNG()" class="btn btn-primary btn-accent-<?php echo $theme_class; ?>">
-                            <i class="fa-solid fa-file-image"></i> Tải ảnh Passport (PNG)
+                    <!-- PHẦN ĐỀ XUẤT VÉ THAM QUAN CHO PHÙ HỢP (PERSONALIZED RECOMMENDATION) -->
+                    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); padding: 1.2rem; border-radius: 16px; margin-bottom: 1.5rem;">
+                        <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; color: var(--<?php echo $theme_class; ?>-primary);">
+                            <?php if ($role === 'student'): ?>
+                                <i class="fa-solid fa-graduation-cap"></i> 🗺️ Lộ Trình Học Sinh Khuyên Dùng
+                            <?php else: ?>
+                                <i class="fa-solid fa-user-group"></i> 🗺️ Lộ Trình Phụ Huynh Khuyên Dùng
+                            <?php endif; ?>
+                        </h4>
+                        <p style="font-size: 0.85rem; line-height: 1.5; color: #cbd5e1;">
+                            <?php if ($role === 'student'): ?>
+                                Chào em học sinh! Hãy hoàn thành các hoạt động tuyệt vời tại: <br>
+                                <strong>Khu gian hàng STEM 🔬 &rarr; Thử thách Thể thao vận động ⚽ &rarr; Sân khấu Lễ hội 🎤 &rarr; Nhận quà lưu niệm tại quầy Check-in chính.</strong>
+                            <?php else: ?>
+                                Chào quý phụ huynh! Hệ thống đề xuất lộ trình trải nghiệm bổ ích và thư giãn: <br>
+                                <strong>Triển lãm Sáng tạo của học sinh 🎨 &rarr; Hội thảo Định hướng & Chia sẻ 💼 &rarr; Trà đạo giáo viên thư giãn 🍵 &rarr; Đồng hành cùng con tại khu Trò chơi gia đình.</strong>
+                            <?php endif; ?>
+                        </p>
+                    </div>
+
+                    <!-- Nút thao tác -->
+                    <div style="display: flex; flex-direction: column; gap: 0.8rem;" class="no-print">
+                        <button onclick="downloadPNG()" class="btn btn-primary btn-accent-<?php echo $theme_class; ?>" id="btn-download-png">
+                            <i class="fa-solid fa-file-image"></i> Tải ảnh Vé Đang Xem (PNG)
                         </button>
                         <button onclick="downloadPDF()" class="btn btn-secondary">
-                            <i class="fa-solid fa-file-pdf"></i> Tải file PDF để in
+                            <i class="fa-solid fa-file-pdf"></i> Tải file PDF Vé Đang Xem
                         </button>
                         <button onclick="window.print()" class="btn btn-secondary">
-                            <i class="fa-solid fa-print"></i> In trực tiếp từ trình duyệt
+                            <i class="fa-solid fa-print"></i> In trực tiếp qua trình duyệt
                         </button>
                     </div>
                 </div>
@@ -354,14 +321,12 @@ if (!$passport) {
     <!-- Script xử lý logic tại trang Passport -->
     <script>
         // Lấy URL hiện tại để gán vào QR code động
-        // URL này hoạt động hoàn hảo trên mọi thiết bị và IP truy cập
         const qrUrl = "<?php echo getBaseUrl() . 'passport.php?code=' . urlencode($passport['passport_code']); ?>";
         const roleTheme = "<?php echo $theme_class; ?>";
 
-        // Khởi tạo mã QR cho cả 4 chủ đề
+        // Khởi tạo mã QR cho Vé Thư Mời (90x90)
         window.addEventListener('load', () => {
-            // QR cho Badge (90x90)
-            new QRCode(document.getElementById("qr-badge"), {
+            new QRCode(document.getElementById("overlay-tm-qr"), {
                 text: qrUrl,
                 width: 90,
                 height: 90,
@@ -369,42 +334,15 @@ if (!$passport) {
                 colorLight : "#ffffff",
                 correctLevel : QRCode.CorrectLevel.H
             });
-
-            // QR cho Boarding Pass (90x90)
-            new QRCode(document.getElementById("qr-boarding"), {
-                text: qrUrl,
-                width: 90,
-                height: 90,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-            });
-
-            // QR cho Event Ticket (75x75)
-            new QRCode(document.getElementById("qr-ticket"), {
-                text: qrUrl,
-                width: 75,
-                height: 75,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-            });
-
-            // QR cho Classic Card (55x55)
-            new QRCode(document.getElementById("qr-classic"), {
-                text: qrUrl,
-                width: 55,
-                height: 55,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-            });
+            
+            // Tải cấu hình căn chỉnh từ localStorage nếu có
+            loadAlignmentSettings();
         });
 
         // Hàm chuyển đổi giao diện Thẻ động
         function switchTheme(themeName, tabElement) {
             // 1. Ẩn toàn bộ thẻ passport
-            const cards = ['badge', 'boarding', 'ticket', 'classic'];
+            const cards = ['thumoi', 'lotrinh'];
             cards.forEach(t => {
                 const cardEl = document.getElementById('theme-' + t);
                 cardEl.style.display = 'none';
@@ -413,14 +351,7 @@ if (!$passport) {
 
             // 2. Hiển thị thẻ được chọn
             const activeCard = document.getElementById('theme-' + themeName);
-            // Với thẻ ngang, dùng grid hoặc flex tùy loại
-            if (themeName === 'boarding') {
-                activeCard.style.display = 'grid';
-            } else if (themeName === 'classic') {
-                activeCard.style.display = 'flex';
-            } else {
-                activeCard.style.display = 'flex'; // Dành cho Badge và Ticket
-            }
+            activeCard.style.display = 'block';
             activeCard.classList.add('passport-card-active');
 
             // 3. Cập nhật trạng thái Active trên nút chuyển
@@ -429,32 +360,143 @@ if (!$passport) {
                 tab.classList.remove('active-student');
                 tab.classList.remove('active-parent');
             });
-            
             tabElement.classList.add('active-' + roleTheme);
+
+            // 4. Hiển thị bảng điều khiển tương ứng với thẻ đang xem
+            if (themeName === 'thumoi') {
+                document.getElementById('control-group-thumoi').style.display = 'block';
+                document.getElementById('control-group-lotrinh').style.display = 'none';
+            } else {
+                document.getElementById('control-group-thumoi').style.display = 'none';
+                document.getElementById('control-group-lotrinh').style.display = 'block';
+            }
         }
 
-        // TẢI ẢNH PNG (Chất lượng siêu nét bằng cách nhân tỷ lệ scale: 3)
+        // ----------------------------------------------------
+        // LOGIC ĐIỀU KHIỂN CĂN CHỈNH VÀ LƯU TRỮ TỌA ĐỘ
+        const defaultSettings = {
+            tmNameTop: 52,
+            tmNameLeft: 50,
+            tmNameSize: 24,
+            tmNameColor: '#ffaa00',
+            
+            tmQrTop: 75,
+            tmQrLeft: 50,
+            tmQrSize: 90,
+            
+            ltNameTop: 15,
+            ltNameLeft: 50,
+            ltNameSize: 24,
+            ltNameColor: '#ffffff'
+        };
+
+        function updateAlignment() {
+            const wrapper = document.getElementById('alignable-wrapper');
+            
+            // Lấy giá trị từ các thanh trượt
+            const tmNameTop = document.getElementById('slider-tm-name-top').value;
+            const tmNameLeft = document.getElementById('slider-tm-name-left').value;
+            const tmNameSize = document.getElementById('slider-tm-name-size').value;
+            const tmNameColor = document.getElementById('color-tm-name').value;
+
+            const tmQrTop = document.getElementById('slider-tm-qr-top').value;
+            const tmQrLeft = document.getElementById('slider-tm-qr-left').value;
+            const tmQrSize = document.getElementById('slider-tm-qr-size').value;
+
+            const ltNameTop = document.getElementById('slider-lt-name-top').value;
+            const ltNameLeft = document.getElementById('slider-lt-name-left').value;
+            const ltNameSize = document.getElementById('slider-lt-name-size').value;
+            const ltNameColor = document.getElementById('color-lt-name').value;
+
+            // Hiển thị số liệu kế bên slider
+            document.getElementById('val-tm-name-top').textContent = tmNameTop + '%';
+            document.getElementById('val-tm-name-left').textContent = tmNameLeft + '%';
+            document.getElementById('val-tm-name-size').textContent = tmNameSize + 'px';
+
+            document.getElementById('val-tm-qr-top').textContent = tmQrTop + '%';
+            document.getElementById('val-tm-qr-left').textContent = tmQrLeft + '%';
+            document.getElementById('val-tm-qr-size').textContent = tmQrSize + 'px';
+
+            document.getElementById('val-lt-name-top').textContent = ltNameTop + '%';
+            document.getElementById('val-lt-name-left').textContent = ltNameLeft + '%';
+            document.getElementById('val-lt-name-size').textContent = ltNameSize + 'px';
+
+            // Áp dụng biến CSS lên wrapper
+            wrapper.style.setProperty('--tm-name-top', tmNameTop + '%');
+            wrapper.style.setProperty('--tm-name-left', tmNameLeft + '%');
+            wrapper.style.setProperty('--tm-name-size', tmNameSize + 'px');
+            wrapper.style.setProperty('--tm-name-color', tmNameColor);
+
+            wrapper.style.setProperty('--tm-qr-top', tmQrTop + '%');
+            wrapper.style.setProperty('--tm-qr-left', tmQrLeft + '%');
+            wrapper.style.setProperty('--tm-qr-size', tmQrSize + 'px');
+
+            wrapper.style.setProperty('--lt-name-top', ltNameTop + '%');
+            wrapper.style.setProperty('--lt-name-left', ltNameLeft + '%');
+            wrapper.style.setProperty('--lt-name-size', ltNameSize + 'px');
+            wrapper.style.setProperty('--lt-name-color', ltNameColor);
+
+            // Lưu vào localStorage
+            const settings = {
+                tmNameTop, tmNameLeft, tmNameSize, tmNameColor,
+                tmQrTop, tmQrLeft, tmQrSize,
+                ltNameTop, ltNameLeft, ltNameSize, ltNameColor
+            };
+            localStorage.setItem('qrvapassport_align_settings', JSON.stringify(settings));
+        }
+
+        function loadAlignmentSettings() {
+            const saved = localStorage.getItem('qrvapassport_align_settings');
+            const settings = saved ? JSON.parse(saved) : defaultSettings;
+
+            // Đổ dữ liệu vào các controls
+            document.getElementById('slider-tm-name-top').value = settings.tmNameTop ?? defaultSettings.tmNameTop;
+            document.getElementById('slider-tm-name-left').value = settings.tmNameLeft ?? defaultSettings.tmNameLeft;
+            document.getElementById('slider-tm-name-size').value = settings.tmNameSize ?? defaultSettings.tmNameSize;
+            document.getElementById('color-tm-name').value = settings.tmNameColor ?? defaultSettings.tmNameColor;
+
+            document.getElementById('slider-tm-qr-top').value = settings.tmQrTop ?? defaultSettings.tmQrTop;
+            document.getElementById('slider-tm-qr-left').value = settings.tmQrLeft ?? defaultSettings.tmQrLeft;
+            document.getElementById('slider-tm-qr-size').value = settings.tmQrSize ?? defaultSettings.tmQrSize;
+
+            document.getElementById('slider-lt-name-top').value = settings.ltNameTop ?? defaultSettings.ltNameTop;
+            document.getElementById('slider-lt-name-left').value = settings.ltNameLeft ?? defaultSettings.ltNameLeft;
+            document.getElementById('slider-lt-name-size').value = settings.ltNameSize ?? defaultSettings.ltNameSize;
+            document.getElementById('color-lt-name').value = settings.ltNameColor ?? defaultSettings.ltNameColor;
+
+            // Kích hoạt hàm cập nhật
+            updateAlignment();
+        }
+
+        function resetAlignment() {
+            if (confirm('Bạn có chắc chắn muốn khôi phục lại vị trí căn chỉnh mặc định ban đầu không?')) {
+                localStorage.removeItem('qrvapassport_align_settings');
+                loadAlignmentSettings();
+            }
+        }
+
+        // ----------------------------------------------------
+        // XUẤT PHÁT FILE ẢNH VÀ FILE PDF
+        
+        // TẢI ẢNH PNG
         function downloadPNG() {
             const activeCard = document.querySelector('.passport-card-active');
-            
-            // Hiển thị loading nhẹ
-            const btn = document.querySelector('.btn-accent-' + roleTheme);
+            const btn = document.getElementById('btn-download-png');
             const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xuất ảnh...';
             btn.disabled = true;
 
             html2canvas(activeCard, {
-                scale: 3, // Nhân 3 độ phân giải để in ấn cực nét
-                useCORS: true, // Cho phép tải các tài nguyên chứa nguồn khác
-                backgroundColor: null, // Tạo nền trong suốt cho thẻ bo góc
+                scale: 3, // Xuất độ nét siêu cao để in ấn không bị vỡ chữ
+                useCORS: true,
+                backgroundColor: null,
                 logging: false
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'Passport_' + '<?php echo $passport["passport_code"]; ?>' + '.png';
+                link.download = 'Ve_' + '<?php echo $passport["passport_code"]; ?>' + '.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
                 
-                // Trở lại ban đầu
                 btn.innerHTML = originalHTML;
                 btn.disabled = false;
             }).catch(err => {
@@ -465,18 +507,16 @@ if (!$passport) {
             });
         }
 
-        // TẢI FILE PDF (Tự động căn chỉnh khổ ngang dọc khớp với kích thước của thẻ)
+        // TẢI FILE PDF (Chuẩn kích thước vừa vặn cho thẻ in)
         function downloadPDF() {
             const activeCard = document.querySelector('.passport-card-active');
-            
-            // Tìm nút PDF
             const btn = document.querySelector('button[onclick="downloadPDF()"]');
             const originalHTML = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xuất PDF...';
             btn.disabled = true;
 
             html2canvas(activeCard, {
-                scale: 2, // Đủ nét để in PDF nhẹ nhàng
+                scale: 2.5,
                 useCORS: true,
                 logging: false
             }).then(canvas => {
@@ -487,13 +527,13 @@ if (!$passport) {
                 const width = activeCard.offsetWidth;
                 const height = activeCard.offsetHeight;
                 
-                // Tự động chọn hướng giấy: 'l' (landscape - ngang) nếu rộng hơn cao, ngược lại 'p' (portrait - dọc)
+                // Căn hướng trang: 'l' cho ngang, 'p' cho dọc
                 const orientation = width > height ? 'l' : 'p';
                 
-                // Khởi tạo PDF có kích thước chính xác bằng kích thước của thẻ (tính theo pixel)
+                // Khởi tạo PDF có kích thước vừa khít bằng kích thước của thẻ
                 const pdf = new jsPDF(orientation, 'px', [width, height]);
                 pdf.addImage(imgData, 'PNG', 0, 0, width, height);
-                pdf.save('Passport_' + '<?php echo $passport["passport_code"]; ?>' + '.pdf');
+                pdf.save('Ve_' + '<?php echo $passport["passport_code"]; ?>' + '.pdf');
                 
                 btn.innerHTML = originalHTML;
                 btn.disabled = false;

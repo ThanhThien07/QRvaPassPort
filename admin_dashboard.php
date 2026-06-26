@@ -68,7 +68,7 @@ $ratio_data = [
 $trend_stmt = $pdo->query("
     SELECT DATE_FORMAT(`created_at`, '%d/%m') as `date`, COUNT(*) as `count` 
     FROM `passports` 
-    GROUP BY DATE(`created_at`) 
+    GROUP BY DATE(`created_at`), DATE_FORMAT(`created_at`, '%d/%m') 
     ORDER BY DATE(`created_at`) ASC 
     LIMIT 10
 ");
@@ -161,7 +161,10 @@ $passports_list = $stmt->fetchAll();
                 <h1 style="font-size: 2.2rem;">Hệ Thống Thống Kê & Quản Trị</h1>
                 <p style="color: var(--text-muted);">Chào mừng trở lại, <?php echo htmlspecialchars($_SESSION['admin_username']); ?>. Xem báo cáo và chỉnh sửa thông tin tại đây.</p>
             </div>
-            <div style="display: flex; gap: 0.8rem;">
+            <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                <a href="print_poster.php" class="btn btn-secondary" style="background: rgba(56, 189, 248, 0.1); color: #38bdf8; border-color: rgba(56, 189, 248, 0.2);" target="_blank">
+                    <i class="fa-solid fa-print"></i> In Poster QR Đăng Ký
+                </a>
                 <a href="admin_dashboard.php?action=export" class="btn btn-secondary" style="background: rgba(16, 185, 129, 0.1); color: #34d399; border-color: rgba(16, 185, 129, 0.2);">
                     <i class="fa-solid fa-file-excel"></i> Xuất danh sách Excel
                 </a>

@@ -32,6 +32,7 @@ body {
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
     border: 3px solid rgba(0, 0, 0, 0.08);
     background: #ffffff;
+    container-type: inline-size; /* Hỗ trợ Container Query để tự động scale cỡ chữ theo chiều rộng thẻ */
 }
 
 .ticket-card-container-student {
@@ -63,9 +64,10 @@ body {
 }
 
 .overlay-name-thumoi {
-    top: 51.5%;
+    top: 50.7%; /* Đưa chữ lên cao một chút để nằm đè ngay ngắn LÊN TRÊN dòng dấu chấm, không bị dòng chấm gạch ngang giữa chữ */
     left: 50%;
-    font-size: 19px; /* Thu nhỏ lại cho vừa với dòng kính gửi */
+    font-size: 11px; /* Cỡ chữ mặc định làm fallback */
+    font-size: 2.1cqw; /* Giảm cỡ chữ xuống để nhỏ bằng đúng cỡ chữ "Kính mời", co giãn hoàn hảo theo khung thẻ */
     color: #5c1d0c; /* Màu đỏ nâu giống chữ Kính Gửi gốc */
     font-family: 'Times New Roman', Times, serif;
     font-style: italic;

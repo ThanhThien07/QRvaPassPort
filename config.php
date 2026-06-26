@@ -4,12 +4,30 @@
  * Antigravity - Premium AI Developer
  */
 
+// Bật hiển thị lỗi để dễ dàng debug khi deploy (Có thể tắt đi khi chạy chính thức)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Cấu hình Database (Tự động thích ứng môi trường Local Laragon và Railway)
 $db_host = getenv('MYSQLHOST') ?: 'localhost';
 $db_user = getenv('MYSQLUSER') ?: 'root';
 $db_pass = getenv('MYSQLPASSWORD') !== false ? getenv('MYSQLPASSWORD') : '';
 $db_name = getenv('MYSQLDATABASE') ?: 'qrvapassport';
 $db_port = getenv('MYSQLPORT') ?: '3306';
+
+// Hỗ trợ tự động parse từ MYSQL_URL hoặc DATABASE_URL (Railway thường cung cấp chuỗi kết nối này)
+$url_env = getenv('MYSQL_URL') ?: getenv('DATABASE_URL');
+if (!empty($url_env)) {
+    $parsed_url = parse_url($url_env);
+    if ($parsed_url !== false) {
+        $db_host = $parsed_url['host'] ?? $db_host;
+        $db_port = $parsed_url['port'] ?? $db_port;
+        $db_user = $parsed_url['user'] ?? $db_user;
+        $db_pass = $parsed_url['pass'] ?? $db_pass;
+        $db_name = isset($parsed_url['path']) ? ltrim($parsed_url['path'], '/') : $db_name;
+    }
+}
 
 define('DB_HOST', $db_host);
 define('DB_USER', $db_user);

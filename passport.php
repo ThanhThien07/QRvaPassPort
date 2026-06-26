@@ -24,7 +24,7 @@ if (!$passport) {
     $error_msg = "Mã Passport <strong>" . htmlspecialchars($code) . "</strong> không tồn tại trên hệ thống. Vui lòng kiểm tra lại!";
 } else {
     // Tìm thấy Passport
-    $fullname = $passport['fullname'];
+    $fullname = mb_convert_case($passport['fullname'], MB_CASE_TITLE, "UTF-8");
     $role = $passport['role'];
     $phone = $passport['phone'];
     $avatar = $passport['avatar'];

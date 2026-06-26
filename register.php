@@ -10,6 +10,9 @@ $success_msg = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fullname = trim($_POST['fullname'] ?? '');
+    if (!empty($fullname)) {
+        $fullname = mb_convert_case($fullname, MB_CASE_TITLE, "UTF-8");
+    }
     $role = trim($_POST['role'] ?? 'student');
     $phone = trim($_POST['phone'] ?? '');
     $student_class = ''; // Lớp học đã được lược bỏ theo yêu cầu

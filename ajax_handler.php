@@ -47,6 +47,9 @@ switch ($action) {
 
         $id = intval($_POST['id'] ?? 0);
         $fullname = trim($_POST['fullname'] ?? '');
+        if (!empty($fullname)) {
+            $fullname = mb_convert_case($fullname, MB_CASE_TITLE, "UTF-8");
+        }
         $role = trim($_POST['role'] ?? 'student');
         $phone = trim($_POST['phone'] ?? '');
         $student_class = ''; // Lược bỏ theo yêu cầu tối giản
@@ -122,6 +125,9 @@ switch ($action) {
         }
 
         $fullname = trim($_POST['fullname'] ?? '');
+        if (!empty($fullname)) {
+            $fullname = mb_convert_case($fullname, MB_CASE_TITLE, "UTF-8");
+        }
         $role = trim($_POST['role'] ?? 'student');
         $phone = trim($_POST['phone'] ?? '');
         $student_class = ''; // Lược bỏ theo yêu cầu tối giản

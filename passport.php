@@ -135,7 +135,7 @@ if (!$passport) {
 
                 <!-- BÊN PHẢI: THÔNG TIN CHI TIẾT VÀ NÚT TẢI VỀ -->
                 <div class="lg:col-span-5 flex flex-col justify-center">
-                    <div class="p-8 md:p-10 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-xl">
+                    <div class="p-8 md:p-10 bg-white border border-slate-100 rounded-3xl shadow-xl shadow-slate-100">
                         
                         <!-- Hiển thị thông báo nếu vừa đăng ký xong -->
                         <?php if (isset($_GET['new']) && $_GET['new'] == 1): ?>

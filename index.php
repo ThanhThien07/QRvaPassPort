@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_query'])) {
         </section>
 
         <!-- Search Section -->
-        <section id="lookup" class="max-w-xl mx-auto mb-16 p-8 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-xl scroll-mt-24">
+        <section id="lookup" class="max-w-xl mx-auto mb-16 p-8 bg-white border border-slate-100 rounded-3xl shadow-xl shadow-slate-100 scroll-mt-24">
             <h3 class="text-center mb-6 text-xl font-extrabold text-slate-800 flex items-center justify-center gap-2">
                 <i class="fa-solid fa-search bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent"></i> Tra Cứu Thư Mời Của Bạn
             </h3>
@@ -136,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_query'])) {
 
         <!-- Features/How it works Section -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-12">
-            <div class="p-8 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
+            <div class="p-8 bg-white border border-slate-100 rounded-3xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
                 <div class="w-14 h-14 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 shadow-md shadow-sky-500/5">
                     <i class="fa-solid fa-user-plus"></i>
                 </div>
@@ -146,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_query'])) {
                 </p>
             </div>
 
-            <div class="p-8 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
+            <div class="p-8 bg-white border border-slate-100 rounded-3xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
                 <div class="w-14 h-14 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 shadow-md shadow-amber-500/5">
                     <i class="fa-solid fa-envelope-open-text"></i>
                 </div>
@@ -156,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_query'])) {
                 </p>
             </div>
 
-            <div class="p-8 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
+            <div class="p-8 bg-white border border-slate-100 rounded-3xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
                 <div class="w-14 h-14 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 shadow-md shadow-emerald-500/5">
                     <i class="fa-solid fa-download"></i>
                 </div>

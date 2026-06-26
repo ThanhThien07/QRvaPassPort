@@ -203,7 +203,7 @@ $passports_list = $stmt->fetchAll();
         <!-- THẺ THỐNG KÊ NHANH (STAT CARDS) -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <!-- Tổng số lượng -->
-            <div class="p-6 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-2xl shadow-md flex justify-between items-center">
+            <div class="p-6 bg-white border border-slate-100 rounded-2xl shadow-md flex justify-between items-center">
                 <div>
                     <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Tổng Đăng Ký</h4>
                     <div class="text-3xl font-extrabold text-slate-800 mt-2" id="stat-total"><?php echo number_format($total_count); ?></div>
@@ -214,7 +214,7 @@ $passports_list = $stmt->fetchAll();
             </div>
 
             <!-- Học sinh -->
-            <div class="p-6 bg-white/85 backdrop-blur-md border border-sky-100/60 rounded-2xl shadow-md flex justify-between items-center">
+            <div class="p-6 bg-white border border-sky-100 rounded-2xl shadow-md flex justify-between items-center">
                 <div>
                     <h4 class="text-xs font-bold uppercase tracking-wider text-sky-500">Học Sinh</h4>
                     <div class="text-3xl font-extrabold text-slate-800 mt-2" id="stat-student"><?php echo number_format($student_count); ?></div>
@@ -225,7 +225,7 @@ $passports_list = $stmt->fetchAll();
             </div>
 
             <!-- Phụ huynh -->
-            <div class="p-6 bg-white/85 backdrop-blur-md border border-amber-100/60 rounded-2xl shadow-md flex justify-between items-center">
+            <div class="p-6 bg-white border border-amber-100 rounded-2xl shadow-md flex justify-between items-center">
                 <div>
                     <h4 class="text-xs font-bold uppercase tracking-wider text-amber-600">Phụ Huynh</h4>
                     <div class="text-3xl font-extrabold text-slate-800 mt-2" id="stat-parent"><?php echo number_format($parent_count); ?></div>
@@ -239,7 +239,7 @@ $passports_list = $stmt->fetchAll();
         <!-- BIỂU ĐỒ BÁO CÁO (CHARTS SECTION) -->
         <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <!-- Biểu đồ tròn: Tỷ lệ -->
-            <div class="p-6 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-2xl shadow-md">
+            <div class="p-6 bg-white border border-slate-100 rounded-2xl shadow-md">
                 <h3 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-6">
                     <i class="fa-solid fa-chart-pie text-slate-400"></i> Tỷ Lệ Nhóm Đối Tượng
                 </h3>
@@ -249,7 +249,7 @@ $passports_list = $stmt->fetchAll();
             </div>
 
             <!-- Biểu đồ đường: Tiến trình đăng ký -->
-            <div class="p-6 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-2xl shadow-md">
+            <div class="p-6 bg-white border border-slate-100 rounded-2xl shadow-md">
                 <h3 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-6">
                     <i class="fa-solid fa-chart-line text-slate-400"></i> Tốc Độ Đăng Ký Theo Thời Gian
                 </h3>
@@ -260,7 +260,7 @@ $passports_list = $stmt->fetchAll();
         </section>
 
         <!-- BỘ LỌC TÌM KIẾM DANH SÁCH (FILTERS & TABLE) -->
-        <section class="p-6 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-xl">
+        <section class="p-6 bg-white border border-slate-100 rounded-3xl shadow-xl shadow-slate-100/40">
             <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-6">
                 <i class="fa-solid fa-list-check text-sky-500"></i> Danh Sách Đăng Ký Chi Tiết
             </h3>

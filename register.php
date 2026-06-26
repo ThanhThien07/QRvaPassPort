@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Main Content -->
     <main class="flex-1 flex items-center justify-center px-6 py-12">
         <div class="max-w-xl w-full">
-            <div class="p-8 md:p-10 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-xl relative overflow-hidden">
+            <div class="p-8 md:p-10 bg-white border border-slate-100 rounded-3xl shadow-xl relative overflow-hidden">
                 <!-- Decor Glow -->
                 <div id="form-glow" class="absolute -top-12 -right-12 w-36 h-36 rounded-full bg-sky-500/10 filter blur-2xl pointer-events-none transition-all duration-500"></div>
 

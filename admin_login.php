@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Main Content -->
     <main class="flex-1 flex items-center justify-center px-6 py-12">
         <div class="max-w-md w-full">
-            <div class="p-8 md:p-10 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-xl">
+            <div class="p-8 md:p-10 bg-white border border-slate-100 rounded-3xl shadow-xl shadow-slate-100">
                 <div class="text-center mb-8">
                     <div class="w-14 h-14 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-md shadow-sky-500/5">
                         <i class="fa-solid fa-user-shield"></i>

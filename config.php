@@ -9,6 +9,9 @@ ini_set('display_errors', 0);
 ini_set('display_startup_errors', 0);
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
 
+// Thiết lập múi giờ Việt Nam (UTC+7) cho PHP
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+
 // Cấu hình Database (Tự động thích ứng môi trường Local Laragon và Railway)
 $db_host = getenv('MYSQLHOST') ?: 'localhost';
 $db_user = getenv('MYSQLUSER') ?: 'root';
@@ -57,6 +60,9 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         $mysql_init_command => "SET NAMES utf8mb4"
     ]);
+    
+    // Thiết lập múi giờ Việt Nam (UTC+7) cho kết nối MySQL để đồng bộ TIMESTAMP
+    $pdo->exec("SET time_zone = '+07:00'");
 
     // 3. Tự động tạo bảng `passports` nếu chưa tồn tại
     $sql_create_table = "

@@ -311,9 +311,9 @@ $passports_list = $stmt->fetchAll();
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <?php if ($row['role'] === 'student'): ?>
-                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-sky-50 border border-sky-100 text-sky-600">Học sinh</span>
+                                            <span class="badge-role px-2.5 py-1 rounded-full text-xs font-bold bg-sky-50 border border-sky-100 text-sky-600">Học sinh</span>
                                         <?php else: ?>
-                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 border border-amber-100 text-amber-600">Phụ huynh</span>
+                                            <span class="badge-role px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 border border-amber-100 text-amber-600">Phụ huynh</span>
                                         <?php endif; ?>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-slate-700 font-semibold"><?php echo htmlspecialchars($row['phone']); ?></td>
@@ -673,6 +673,148 @@ $passports_list = $stmt->fetchAll();
                     alert('Có lỗi xảy ra khi thực hiện yêu cầu xóa!');
                 });
             }
+        }
+
+        // ====================================================
+        // III. REAL-TIME AUTO UPDATES (POLLING EVERY 5 SECONDS)
+        // Lưu ID lớn nhất hiện tại làm mốc theo dõi
+        let lastId = <?php echo !empty($passports_list) ? intval(max(array_column($passports_list, 'id'))) : 0; ?>;
+
+        function pollNewRegistrations() {
+            // Chỉ thực hiện poll tự động nếu admin không đang thực hiện tìm kiếm hoặc lọc để tránh gây nhiễu dữ liệu đang xem
+            const urlParams = new URLSearchParams(window.location.search);
+            const isSearching = urlParams.has('search') && urlParams.get('search').trim() !== '';
+            const isFiltering = urlParams.has('role') && urlParams.get('role').trim() !== '';
+            
+            if (isSearching || isFiltering) {
+                return; 
+            }
+
+            fetch('ajax_handler.php?action=poll_updates&last_id=' + lastId)
+                .then(res => res.json())
+                .then(response => {
+                    if (response.success && response.new_records && response.new_records.length > 0) {
+                        const tableBody = document.getElementById('table-body');
+                        
+                        // Nếu bảng đang trống (đang hiển thị dòng "Không tìm thấy dữ liệu")
+                        if (tableBody.querySelector('td[colspan="7"]')) {
+                            tableBody.innerHTML = '';
+                        }
+
+                        // Lặp qua các bản ghi mới (mới đăng ký) để chèn lên đầu bảng
+                        response.new_records.forEach(row => {
+                            const tr = document.createElement('tr');
+                            tr.className = 'hover:bg-slate-50/40 transition-colors opacity-0 -translate-y-4';
+                            tr.id = 'row-' + row.id;
+                            tr.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                            
+                            const roleBadge = row.role === 'student' 
+                                ? '<span class="badge-role px-2.5 py-1 rounded-full text-xs font-bold bg-sky-50 border border-sky-100 text-sky-600">Học sinh</span>'
+                                : '<span class="badge-role px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 border border-amber-100 text-amber-600">Phụ huynh</span>';
+
+                            tr.innerHTML = `
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <img class="w-9 h-9 rounded-full object-cover border border-slate-200" src="${escapeHtml(row.avatar)}" alt="Avatar">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap font-mono font-bold tracking-wide text-slate-800">
+                                    ${escapeHtml(row.passport_code)}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-800">
+                                    ${escapeHtml(row.fullname)}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    ${roleBadge}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-slate-700 font-semibold">${escapeHtml(row.phone)}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-slate-400 text-xs">
+                                    ${escapeHtml(row.formatted_date)}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex gap-2 justify-center">
+                                        <!-- Xem Passport -->
+                                        <a href="passport.php?code=${row.passport_code}" class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center hover:bg-sky-100 transition-colors" title="Xem Passport" target="_blank">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                        <!-- Chỉnh sửa -->
+                                        <button onclick="openEditModal(${row.id})" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 transition-colors" title="Chỉnh sửa thông tin">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                        <!-- Xóa -->
+                                        <button onclick="deleteMember(${row.id}, '${escapeJs(row.fullname)}')" class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-100 transition-colors" title="Xóa Passport">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            `;
+
+                            // Chèn dòng mới lên đầu bảng
+                            tableBody.insertBefore(tr, tableBody.firstChild);
+
+                            // Kích hoạt hiệu ứng fade-in & slide-down mượt mà sau 50ms
+                            setTimeout(() => {
+                                tr.classList.remove('opacity-0', '-translate-y-4');
+                            }, 50);
+
+                            // Cập nhật mốc ID lớn nhất
+                            if (parseInt(row.id) > lastId) {
+                                lastId = parseInt(row.id);
+                            }
+                        });
+
+                        // 1. Cập nhật thẻ thống kê bằng hiệu ứng tăng số chạy mượt mà (Smooth Animation Counter)
+                        animateValue('stat-total', response.stats.total);
+                        animateValue('stat-student', response.stats.student);
+                        animateValue('stat-parent', response.stats.parent);
+
+                        // 2. Cập nhật Biểu đồ tròn (Doughnut Chart) ngay lập tức
+                        if (window.ratioChart) {
+                            ratioChart.data.datasets[0].data = [response.stats.student, response.stats.parent];
+                            ratioChart.update();
+                        }
+                    }
+                })
+                .catch(err => console.error('Lỗi tự động cập nhật Dashboard:', err));
+        }
+
+        // Thiết lập vòng lặp chạy tự động mỗi 5 giây
+        setInterval(pollNewRegistrations, 5000);
+
+        // --- HÀM HELPER HỖ TRỢ ---
+        // Xử lý chống mã độc XSS khi render dữ liệu từ JSON ra HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+        
+        // Xử lý escape ký tự trong Javascript (để truyền vào hàm xóa)
+        function escapeJs(str) {
+            if (!str) return '';
+            return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+        }
+
+        // Hàm chạy số mượt mà (Smooth Value Animation)
+        function animateValue(id, endVal) {
+            const obj = document.getElementById(id);
+            if (!obj) return;
+            const startVal = parseInt(obj.textContent.replace(/,/g, '')) || 0;
+            if (startVal === endVal) return;
+            
+            const duration = 800; // Thời gian chạy (ms)
+            const startTime = performance.now();
+            
+            function updateNumber(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // Ease out quad
+                const easeProgress = progress * (2 - progress);
+                const currentVal = Math.floor(startVal + (endVal - startVal) * easeProgress);
+                obj.textContent = currentVal.toLocaleString();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                }
+            }
+            requestAnimationFrame(updateNumber);
         }
     </script>
 </body>

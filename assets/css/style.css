@@ -64,7 +64,7 @@ body {
 }
 
 .overlay-name-thumoi {
-    top: 48.0%; /* Đặt tên nằm hoàn toàn ở PHÍA TRÊN dãy dấu ba chấm, giúp tên rõ ràng, sang trọng và không bị các dấu chấm gạch ngang qua */
+    top: 49.6%; /* Dịch xuống một chút để vừa chạm sát vào dòng dấu ba chấm ở dưới, tạo cảm giác viết đè lên dòng kẻ */
     left: 50%;
     font-size: 11px; /* Cỡ chữ mặc định làm fallback */
     font-size: 2.2cqw; /* Cỡ chữ nhỏ nhắn, tinh tế và tương xứng với chữ "Kính mời" */

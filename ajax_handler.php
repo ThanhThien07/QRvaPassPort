@@ -172,6 +172,36 @@ switch ($action) {
         }
         break;
 
+    // 5. THEO DÕI CẬP NHẬT THỜI GIAN THỰC (REAL-TIME POLLING)
+    case 'poll_updates':
+        $last_id = intval($_GET['last_id'] ?? 0);
+        
+        // Lấy tất cả bản ghi mới đăng ký có ID lớn hơn last_id và định dạng sẵn ngày giờ Việt Nam
+        $stmt = $pdo->prepare("SELECT *, DATE_FORMAT(`created_at`, '%d/%m %H:%i') as `formatted_date` FROM `passports` WHERE `id` > ? ORDER BY `id` ASC");
+        $stmt->execute([$last_id]);
+        $new_records = $stmt->fetchAll();
+        
+        // Cập nhật lại họ tên viết hoa chuẩn cho các bản ghi mới trả về
+        foreach ($new_records as &$rec) {
+            $rec['fullname'] = mb_convert_case($rec['fullname'], MB_CASE_TITLE, "UTF-8");
+        }
+        
+        // Lấy lại thống kê tổng hợp mới nhất để đồng bộ số liệu
+        $total_count = $pdo->query("SELECT COUNT(*) FROM `passports`")->fetchColumn();
+        $student_count = $pdo->query("SELECT COUNT(*) FROM `passports` WHERE `role` = 'student'")->fetchColumn();
+        $parent_count = $pdo->query("SELECT COUNT(*) FROM `passports` WHERE `role` = 'parent'")->fetchColumn();
+        
+        echo json_encode([
+            'success' => true,
+            'new_records' => $new_records,
+            'stats' => [
+                'total' => intval($total_count),
+                'student' => intval($student_count),
+                'parent' => intval($parent_count)
+            ]
+        ]);
+        break;
+
     default:
         echo json_encode(['success' => false, 'message' => 'Hành động không hợp lệ!']);
         break;

@@ -21,6 +21,20 @@ $register_url = getBaseUrl() . 'register.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>In Poster Mã QR Đăng Ký Cố Định</title>
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['Times New Roman', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <!-- CSS chính -->
     <link rel="stylesheet" href="assets/css/style.css">
     <!-- Font Awesome Icons -->
@@ -47,40 +61,12 @@ $register_url = getBaseUrl() . 'register.php';
             margin-bottom: 2rem;
         }
 
-        /* Thanh điều khiển nổi trên màn hình */
-        .print-control-bar {
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            position: fixed;
-            bottom: 2rem;
-            z-index: 100;
-            backdrop-filter: blur(10px);
-        }
-
-        .print-info-text {
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-        .print-info-text strong {
-            color: #38bdf8;
-            font-family: monospace;
-        }
-
         /* Ẩn thanh điều khiển và tối ưu khổ giấy khi in thực tế */
         @media print {
             body {
                 background: #ffffff !important;
                 padding: 0 !important;
                 margin: 0 !important;
-            }
-            .print-control-bar {
-                display: none !important;
             }
             .poster-preview-wrapper {
                 box-shadow: none !important;
@@ -97,17 +83,17 @@ $register_url = getBaseUrl() . 'register.php';
         }
     </style>
 </head>
-<body>
+<body class="antialiased">
 
     <!-- Thanh điều khiển nổi trên màn hình (Ẩn khi in) -->
-    <div class="print-control-bar no-print">
-        <span class="print-info-text">
-            <i class="fa-solid fa-link"></i> URL QR đăng ký: <strong><?php echo htmlspecialchars($register_url); ?></strong>
+    <div class="no-print flex flex-wrap gap-6 items-center bg-slate-900/95 border border-slate-850 px-8 py-4 rounded-full shadow-2xl fixed bottom-8 z-50 backdrop-blur-md">
+        <span class="text-slate-400 text-sm">
+            <i class="fa-solid fa-link text-sky-500 mr-1"></i> URL QR đăng ký: <strong class="font-mono text-sky-400"><?php echo htmlspecialchars($register_url); ?></strong>
         </span>
-        <button onclick="window.print()" class="btn btn-primary" style="padding: 0.6rem 1.5rem; font-size: 0.95rem;">
+        <button onclick="window.print()" class="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full font-bold text-sm bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/25 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300">
             <i class="fa-solid fa-print"></i> Tiến hành In Poster (A4)
         </button>
-        <a href="admin_dashboard.php" class="btn btn-secondary" style="padding: 0.6rem 1.5rem; font-size: 0.95rem;">
+        <a href="admin_dashboard.php" class="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full font-bold text-sm bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition-all duration-300">
             <i class="fa-solid fa-arrow-left"></i> Quay lại Dashboard
         </a>
     </div>

@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $existing_user = $stmt->fetch();
         
         if ($existing_user) {
-            $errors[] = 'Số điện thoại này đã được đăng ký bởi <strong>' . htmlspecialchars($existing_user['fullname']) . '</strong>. <a href="passport.php?code=' . $existing_user['passport_code'] . '" style="color: var(--student-primary); font-weight: bold; text-decoration: underline;">Bấm vào đây để xem Passport</a>';
+            $errors[] = 'Số điện thoại này đã được đăng ký bởi <strong>' . htmlspecialchars($existing_user['fullname']) . '</strong>. <a href="passport.php?code=' . $existing_user['passport_code'] . '" class="text-sky-600 font-bold underline hover:text-sky-700">Bấm vào đây để xem Passport</a>';
         }
     }
 
@@ -76,43 +76,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Ký Passport Điện Tử</title>
-    <!-- CSS chính -->
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        student: {
+                            primary: '#0284c7',
+                            secondary: '#1d4ed8',
+                            glow: 'rgba(2, 132, 199, 0.15)',
+                        },
+                        parent: {
+                            primary: '#d97706',
+                            secondary: '#c2410c',
+                            glow: 'rgba(217, 119, 6, 0.15)',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['Times New Roman', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- CSS chính (Tối giản chỉ giữ card & animation) -->
     <link rel="stylesheet" href="assets/css/style.css">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body class="min-h-screen flex flex-col antialiased text-slate-800">
 
     <!-- Header -->
-    <header>
-        <a href="index.php" class="logo-container">
-            <div class="logo-icon">P</div>
+    <header class="sticky top-0 z-50 flex justify-between items-center px-6 py-4 bg-white/75 backdrop-blur-md border-b border-slate-200/80 no-print">
+        <a href="index.php" class="flex items-center gap-3 no-underline text-slate-900 group">
+            <div class="w-10 h-10 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl flex items-center justify-center font-extrabold text-white text-lg shadow-md group-hover:scale-105 transition-transform">P</div>
             <div>
-                <div class="logo-text">PASSPORT</div>
-                <div class="logo-sub">Điện Tử Học Đường</div>
+                <div class="text-lg font-extrabold tracking-tight leading-none">PASSPORT</div>
+                <div class="text-[10px] text-slate-500 font-medium tracking-wider uppercase mt-0.5">Điện Tử Học Đường</div>
             </div>
         </a>
         <nav>
-            <a href="index.php" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Quay lại</a>
+            <a href="index.php" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200/80 hover:border-slate-300 active:bg-slate-100 transition-all duration-300"><i class="fa-solid fa-arrow-left"></i> Quay lại</a>
         </nav>
     </header>
 
     <!-- Main Content -->
-    <main>
-        <div class="form-container">
-            <div class="glass-panel" style="position: relative; overflow: hidden;">
+    <main class="flex-1 flex items-center justify-center px-6 py-12">
+        <div class="max-w-xl w-full">
+            <div class="p-8 md:p-10 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-xl relative overflow-hidden">
                 <!-- Decor Glow -->
-                <div id="form-glow" style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; border-radius: 50%; background: rgba(0, 240, 255, 0.15); filter: blur(30px); pointer-events: none; transition: var(--transition);"></div>
+                <div id="form-glow" class="absolute -top-12 -right-12 w-36 h-36 rounded-full bg-sky-500/10 filter blur-2xl pointer-events-none transition-all duration-500"></div>
 
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <h2 style="font-size: 2rem;" id="form-title">Đăng Ký <span class="text-gradient-student">Passport Học Sinh</span></h2>
-                    <p style="color: var(--text-muted); margin-top: 0.5rem;">Vui lòng điền thông tin chính xác để hệ thống tạo Passport điện tử.</p>
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800" id="form-title">Đăng Ký <span class="bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">Passport Học Sinh</span></h2>
+                    <p class="text-slate-400 text-sm mt-2">Vui lòng điền thông tin chính xác để hệ thống tạo Passport điện tử.</p>
                 </div>
 
                 <!-- Hiển thị lỗi nếu có -->
                 <?php if (!empty($errors)): ?>
-                    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.95rem;">
-                        <ul style="list-style-position: inside; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <div class="bg-red-50 border border-red-200 text-red-600 p-4 rounded-2xl mb-6 text-sm">
+                        <ul class="list-disc list-inside flex flex-col gap-1.5">
                             <?php foreach ($errors as $error): ?>
                                 <li><?php echo $error; ?></li>
                             <?php endforeach; ?>
@@ -121,49 +147,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
 
                 <!-- Form -->
-                <form action="register.php" method="POST">
+                <form action="register.php" method="POST" class="space-y-5">
                     
                     <!-- Lựa chọn đối tượng (Role) -->
-                    <div class="form-group">
-                        <label class="form-label">Bạn là ai?</label>
-                        <div class="role-selector">
-                            <label class="role-option active-student" id="option-student">
-                                <input type="radio" name="role" value="student" checked onclick="switchRole('student')">
-                                <span class="icon"><i class="fa-solid fa-graduation-cap"></i></span>
-                                <span class="title">Học Sinh</span>
-                                <span class="desc">Thẻ Xanh Neon năng động</span>
+                    <div>
+                        <label class="block font-semibold text-slate-700 text-sm mb-3">Bạn là ai?</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <label class="border-2 border-sky-500 bg-sky-50/40 shadow-md shadow-sky-500/5 rounded-2xl p-4 text-center cursor-pointer relative flex flex-col items-center justify-center transition-all duration-300" id="option-student">
+                                <input type="radio" name="role" value="student" class="absolute opacity-0 cursor-pointer" checked onclick="switchRole('student')">
+                                <span class="icon text-2xl mb-2 text-sky-500"><i class="fa-solid fa-graduation-cap"></i></span>
+                                <span class="title font-bold text-sky-600 text-sm">Học Sinh</span>
+                                <span class="text-[10px] text-slate-400 mt-0.5">Màu Thư mời Xanh Neon</span>
                             </label>
-                            <label class="role-option" id="option-parent">
-                                <input type="radio" name="role" value="parent" onclick="switchRole('parent')">
-                                <span class="icon"><i class="fa-solid fa-user-group"></i></span>
-                                <span class="title">Phụ Huynh</span>
-                                <span class="desc">Thẻ Vàng Amber ấm áp</span>
+                            <label class="border border-slate-200/80 rounded-2xl p-4 text-center cursor-pointer bg-slate-50/50 hover:bg-slate-50 relative flex flex-col items-center justify-center transition-all duration-300" id="option-parent">
+                                <input type="radio" name="role" value="parent" class="absolute opacity-0 cursor-pointer" onclick="switchRole('parent')">
+                                <span class="icon text-2xl mb-2 text-slate-400"><i class="fa-solid fa-user-group"></i></span>
+                                <span class="title font-bold text-slate-700 text-sm">Phụ Huynh</span>
+                                <span class="text-[10px] text-slate-400 mt-0.5">Màu Thư mời Hổ phách</span>
                             </label>
                         </div>
                     </div>
 
                     <!-- Họ và tên -->
-                    <div class="form-group">
-                        <label class="form-label" id="label-fullname"><i class="fa-solid fa-user"></i> Họ và Tên Học Sinh</label>
-                        <input type="text" name="fullname" class="form-control" placeholder="Nhập họ và tên đầy đủ..." required value="<?php echo htmlspecialchars($_POST['fullname'] ?? ''); ?>">
+                    <div>
+                        <label class="block font-semibold text-slate-700 text-sm mb-2" id="label-fullname"><i class="fa-solid fa-user"></i> Họ và Tên Học Sinh</label>
+                        <input type="text" name="fullname" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3.5 px-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300" placeholder="Nhập họ và tên đầy đủ..." required value="<?php echo htmlspecialchars($_POST['fullname'] ?? ''); ?>">
                     </div>
 
                     <!-- Số điện thoại -->
-                    <div class="form-group">
-                        <label class="form-label"><i class="fa-solid fa-phone"></i> Số Điện Thoại Liên Hệ</label>
-                        <input type="tel" name="phone" class="form-control" placeholder="Nhập số điện thoại để tra cứu lại sau..." required value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>">
+                    <div>
+                        <label class="block font-semibold text-slate-700 text-sm mb-2"><i class="fa-solid fa-phone"></i> Số Điện Thoại Liên Hệ</label>
+                        <input type="tel" name="phone" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3.5 px-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300" placeholder="Nhập số điện thoại để tra cứu lại sau..." required value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>">
                     </div>
 
                     <!-- Trường thông tin thay đổi theo đối tượng -->
                     <!-- Tên của con (Chỉ hiện khi là Phụ huynh) -->
-                    <div class="form-group" id="group-student-name" style="display: none;">
-                        <label class="form-label"><i class="fa-solid fa-child"></i> Họ và Tên Con (Học sinh)</label>
-                        <input type="text" name="student_name" class="form-control" placeholder="Nhập họ tên đầy đủ của con..." value="<?php echo htmlspecialchars($_POST['student_name'] ?? ''); ?>">
+                    <div id="group-student-name" style="display: none;">
+                        <label class="block font-semibold text-slate-700 text-sm mb-2"><i class="fa-solid fa-child"></i> Họ và Tên Con (Học sinh)</label>
+                        <input type="text" name="student_name" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3.5 px-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300" placeholder="Nhập họ tên đầy đủ của con..." value="<?php echo htmlspecialchars($_POST['student_name'] ?? ''); ?>">
                     </div>
 
                     <!-- Nút Submit -->
-                    <button type="submit" class="btn btn-primary" id="btn-submit" style="width: 100%; padding: 1rem; font-size: 1.1rem; margin-top: 1.5rem;">
-                        <i class="fa-solid fa-qrcode"></i> Tạo Passport Của Tôi
+                    <button type="submit" class="w-full py-4 px-6 rounded-2xl font-bold text-base bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-sky-500/30 hover:brightness-105 active:translate-y-0 active:shadow-lg transition-all duration-300" id="btn-submit">
+                        <i class="fa-solid fa-qrcode mr-1.5"></i> Tạo Passport Của Tôi
                     </button>
                 </form>
             </div>
@@ -171,7 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </main>
 
     <!-- Footer -->
-    <footer>
+    <footer class="text-center py-6 border-t border-slate-200/60 mt-auto text-slate-400 text-sm no-print">
         <p>&copy; 2026 Hệ thống Passport Điện Tử Học Đường. Phát triển bởi Antigravity AI.</p>
     </footer>
 
@@ -189,34 +215,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (role === 'student') {
                 // Active Học sinh
-                optStudent.classList.add('active-student');
-                optParent.classList.remove('active-parent');
+                optStudent.className = 'border-2 border-sky-500 bg-sky-50/40 shadow-md shadow-sky-500/5 rounded-2xl p-4 text-center cursor-pointer relative flex flex-col items-center justify-center transition-all duration-300';
+                optStudent.querySelector('.icon').className = 'icon text-2xl mb-2 text-sky-500';
+                optStudent.querySelector('.title').className = 'title font-bold text-sky-600 text-sm';
+                
+                // Deactive Phụ huynh
+                optParent.className = 'border border-slate-200/80 rounded-2xl p-4 text-center cursor-pointer bg-slate-50/50 hover:bg-slate-50 relative flex flex-col items-center justify-center transition-all duration-300';
+                optParent.querySelector('.icon').className = 'icon text-2xl mb-2 text-slate-400';
+                optParent.querySelector('.title').className = 'title font-bold text-slate-700 text-sm';
                 
                 // Đổi màu Glow và Title
-                formGlow.style.background = 'rgba(0, 240, 255, 0.15)';
-                formTitle.innerHTML = 'Đăng Ký <span class="text-gradient-student">Passport Học Sinh</span>';
+                formGlow.className = 'absolute -top-12 -right-12 w-36 h-36 rounded-full bg-sky-500/10 filter blur-2xl pointer-events-none transition-all duration-500';
+                formTitle.innerHTML = 'Đăng Ký <span class="bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">Passport Học Sinh</span>';
                 
                 // Thay đổi Label và ẩn/hiện trường thông tin
                 labelFullname.innerHTML = '<i class="fa-solid fa-user"></i> Họ và Tên Học Sinh';
                 groupStudentName.style.display = 'none';
+                groupStudentName.querySelector('input').removeAttribute('required');
                 
                 // Thay đổi nút submit
-                btnSubmit.className = 'btn btn-primary btn-accent-student';
+                btnSubmit.className = 'w-full py-4 px-6 rounded-2xl font-bold text-base bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-sky-500/30 hover:brightness-105 active:translate-y-0 active:shadow-lg transition-all duration-300';
             } else {
                 // Active Phụ huynh
-                optStudent.classList.remove('active-student');
-                optParent.classList.add('active-parent');
+                optStudent.className = 'border border-slate-200/80 rounded-2xl p-4 text-center cursor-pointer bg-slate-50/50 hover:bg-slate-50 relative flex flex-col items-center justify-center transition-all duration-300';
+                optStudent.querySelector('.icon').className = 'icon text-2xl mb-2 text-slate-400';
+                optStudent.querySelector('.title').className = 'title font-bold text-slate-700 text-sm';
+
+                optParent.className = 'border-2 border-amber-500 bg-amber-50/40 shadow-md shadow-amber-500/5 rounded-2xl p-4 text-center cursor-pointer relative flex flex-col items-center justify-center transition-all duration-300';
+                optParent.querySelector('.icon').className = 'icon text-2xl mb-2 text-amber-600';
+                optParent.querySelector('.title').className = 'title font-bold text-amber-600 text-sm';
                 
                 // Đổi màu Glow và Title
-                formGlow.style.background = 'rgba(255, 170, 0, 0.15)';
-                formTitle.innerHTML = 'Đăng Ký <span class="text-gradient-parent">Passport Phụ Huynh</span>';
+                formGlow.className = 'absolute -top-12 -right-12 w-36 h-36 rounded-full bg-amber-500/10 filter blur-2xl pointer-events-none transition-all duration-500';
+                formTitle.innerHTML = 'Đăng Ký <span class="bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">Passport Phụ Huynh</span>';
                 
                 // Thay đổi Label và ẩn/hiện trường thông tin
                 labelFullname.innerHTML = '<i class="fa-solid fa-user"></i> Họ và Tên Phụ Huynh';
                 groupStudentName.style.display = 'block';
+                groupStudentName.querySelector('input').setAttribute('required', 'required');
                 
                 // Thay đổi nút submit
-                btnSubmit.className = 'btn btn-primary btn-accent-parent';
+                btnSubmit.className = 'w-full py-4 px-6 rounded-2xl font-bold text-base bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-amber-500/30 hover:brightness-105 active:translate-y-0 active:shadow-lg transition-all duration-300';
             }
         }
 

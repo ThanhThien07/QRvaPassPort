@@ -36,8 +36,10 @@ if (!$passport) {
     $role_label = ($role === 'student') ? 'Học Sinh' : 'Phụ Huynh';
     $theme_class = ($role === 'student') ? 'student' : 'parent';
     
-    // Xác định mẫu lộ trình tương ứng
-    $route_image = ($role === 'student') ? 'anh/lotrinhsinhvien-final.png' : 'anh/lotrinhphuhuynh-final.png';
+    // Tạo biến class Tailwind động
+    $accent_text = ($role === 'student') ? 'text-sky-600' : 'text-amber-600';
+    $accent_gradient = ($role === 'student') ? 'from-sky-500 to-blue-600' : 'from-amber-500 to-orange-600';
+    $accent_shadow_glow = ($role === 'student') ? 'shadow-sky-500/25 hover:shadow-sky-500/30' : 'shadow-amber-500/25 hover:shadow-amber-500/30';
 }
 ?>
 <!DOCTYPE html>
@@ -46,149 +48,139 @@ if (!$passport) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Passport & Vé Sự Kiện - <?php echo htmlspecialchars($fullname ?? 'Lỗi'); ?></title>
-    <!-- CSS chính -->
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        student: {
+                            primary: '#0284c7',
+                            secondary: '#1d4ed8',
+                            glow: 'rgba(2, 132, 199, 0.15)',
+                        },
+                        parent: {
+                            primary: '#d97706',
+                            secondary: '#c2410c',
+                            glow: 'rgba(217, 119, 6, 0.15)',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['Times New Roman', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- CSS chính (Tối giản chỉ giữ card & animation) -->
     <link rel="stylesheet" href="assets/css/style.css">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body class="min-h-screen flex flex-col antialiased text-slate-800">
 
     <!-- Header -->
-    <header class="no-print">
-        <a href="index.php" class="logo-container">
-            <div class="logo-icon">P</div>
+    <header class="sticky top-0 z-50 flex justify-between items-center px-6 py-4 bg-white/75 backdrop-blur-md border-b border-slate-200/80 no-print">
+        <a href="index.php" class="flex items-center gap-3 no-underline text-slate-900 group">
+            <div class="w-10 h-10 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl flex items-center justify-center font-extrabold text-white text-lg shadow-md group-hover:scale-105 transition-transform">P</div>
             <div>
-                <div class="logo-text">PASSPORT</div>
-                <div class="logo-sub">Điện Tử Học Đường</div>
+                <div class="text-lg font-extrabold tracking-tight leading-none">PASSPORT</div>
+                <div class="text-[10px] text-slate-500 font-medium tracking-wider uppercase mt-0.5">Điện Tử Học Đường</div>
             </div>
         </a>
-        <nav>
-            <a href="index.php" class="btn btn-secondary"><i class="fa-solid fa-house"></i> Trang chủ</a>
-            <a href="register.php" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Đăng ký mới</a>
+        <nav class="flex gap-3">
+            <a href="index.php" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200/80 hover:border-slate-300 active:bg-slate-100 transition-all duration-300"><i class="fa-solid fa-house"></i> Trang chủ</a>
+            <a href="register.php" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-md shadow-sky-500/15 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/20 active:translate-y-0 active:shadow-md transition-all duration-300"><i class="fa-solid fa-plus"></i> Đăng ký mới</a>
         </nav>
     </header>
 
     <!-- Main Content -->
-    <main>
+    <main class="flex-1 max-w-6xl w-full mx-auto px-6 py-12 flex items-center">
         <?php if (isset($error_msg)): ?>
             <!-- Màn hình lỗi không tìm thấy -->
-            <div class="glass-panel" style="max-width: 500px; margin: 4rem auto; text-align: center; padding: 3rem 2rem;">
-                <div style="width: 70px; height: 70px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 1.5rem auto;">
+            <div class="max-w-md w-full mx-auto p-8 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-xl text-center">
+                <div class="w-16 h-16 bg-red-50 text-red-500 border border-red-100 rounded-full flex items-center justify-center text-3xl mx-auto mb-6 shadow-sm">
                     <i class="fa-solid fa-circle-exclamation"></i>
                 </div>
-                <h2><?php echo $error_title; ?></h2>
-                <p style="color: var(--text-muted); margin: 1rem 0 2rem 0;"><?php echo $error_msg; ?></p>
-                <a href="index.php" class="btn btn-primary"><i class="fa-solid fa-house"></i> Về Trang Chủ</a>
+                <h2 class="text-xl font-extrabold text-slate-800 mb-3"><?php echo $error_title; ?></h2>
+                <p class="text-slate-500 text-sm leading-relaxed mb-6"><?php echo $error_msg; ?></p>
+                <a href="index.php" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-md hover:-translate-y-0.5 transition-all"><i class="fa-solid fa-house"></i> Về Trang Chủ</a>
             </div>
         <?php else: ?>
             
             <!-- Màn hình hiển thị Passport & Vé mời thành công -->
-            <div class="passport-layout">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 w-full">
                 
-                <!-- BÊN TRÁI: KHU VỰC HIỂN THỊ THƯ MỜI & VÉ LỘ TRÌNH -->
-                <div class="passport-viewer">
+                <!-- BÊN TRÁI: KHU VỰC HIỂN THỊ THƯ MỜI -->
+                <div class="lg:col-span-7 flex flex-col items-center justify-center">
                     
                     <!-- KHUNG CHỨA THẺ PASSPORT -->
-                    <div class="passport-card-wrapper" id="alignable-wrapper">
+                    <div class="w-full max-w-[500px]">
                         
                         <!-- TẤM VÉ 1: THƯ MỜI THAM DỰ (Tương ứng file final-thumoi.png) -->
                         <div id="theme-thumoi" class="ticket-card-container ticket-card-container-<?php echo $theme_class; ?>">
                             <!-- Ảnh mẫu gốc từ thư mục anh -->
                             <img class="ticket-template-img" src="anh/final-thumoi.png" alt="Vé Thư Mời" onerror="this.src='uploads/default.png'; alert('Không tìm thấy tệp anh/final-thumoi.png! Hệ thống sẽ dùng ảnh mặc định thay thế.');">
                             
-                            <!-- Họ tên đè lên (Overlay) - Mặc định màu trắng, tự căn giữa đẹp mắt -->
-                            <div class="overlay-element overlay-name-thumoi" id="overlay-tm-name" style="color: #ffffff; top: 52%; left: 50%; font-size: 24px;">
+                            <!-- Họ tên đè lên (Overlay) - Thiết kế font và màu đồng bộ với "Kính gửi" -->
+                            <div class="overlay-element overlay-name-thumoi" id="overlay-tm-name">
                                 <?php echo htmlspecialchars($fullname); ?>
                             </div>
                         </div>
 
-                        <!-- Dòng chữ phân tách: Vé của bạn là: -->
-                        <div class="ticket-separator no-print" style="text-align: center; margin: 2rem 0; font-size: 1.2rem; font-weight: bold; color: var(--text-white); display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                            <i class="fa-solid fa-ticket" style="color: var(--<?php echo $theme_class; ?>-primary); font-size: 1.3rem;"></i> 
-                            <span>Vé của bạn là:</span>
-                        </div>
-
-                        <!-- TẤM VÉ 2: LỘ TRÌNH THAM QUAN (Lọc theo vai trò HS/PH) - KHÔNG hiện tên, KHÔNG cho chỉnh -->
-                        <div id="theme-lotrinh" class="ticket-card-container ticket-card-container-<?php echo $theme_class; ?>">
-                            <!-- Lộ trình tương ứng cho học sinh hoặc phụ huynh -->
-                            <img class="ticket-template-img" src="<?php echo htmlspecialchars($route_image); ?>" alt="Lộ Trình Tham Quan" onerror="this.src='uploads/default.png'; alert('Không tìm thấy tệp lộ trình tương ứng trong thư mục anh!');">
-                        </div>
-
                     </div>
                 </div>
 
-                </div>
-
-                    <!-- BÊN PHẢI: THÔNG TIN CHI TIẾT VÀ NÚT TẢI VỀ -->
-                <div class="action-card glass-panel">
-                    
-                    <!-- Hiển thị thông báo nếu vừa đăng ký xong -->
-                    <?php if (isset($_GET['new']) && $_GET['new'] == 1): ?>
-                        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; padding: 1.2rem; border-radius: 16px; text-align: center; margin-bottom: 1.5rem;">
-                            <div style="font-size: 2rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-circle-check"></i></div>
-                            <h4 style="font-size: 1.1rem; margin-bottom: 0.2rem;">Đăng Ký Thành Công!</h4>
-                            <p style="font-size: 0.8rem; color: var(--text-muted);">Passport và thư mời của bạn đã được khởi tạo và lưu trữ.</p>
-                        </div>
-                    <?php endif; ?>
- 
-                    <h3><i class="fa-solid fa-circle-info text-gradient-<?php echo $theme_class; ?>"></i> Thông Tin Passport</h3>
-                    
-                    <ul class="meta-info-list" style="margin-bottom: 1.5rem;">
-                        <li class="meta-info-item">
-                            <span>Mã Passport:</span>
-                            <strong style="font-family: monospace; letter-spacing: 1.5px; color: var(--<?php echo $theme_class; ?>-primary);"><?php echo htmlspecialchars($passport['passport_code']); ?></strong>
-                        </li>
-                        <li class="meta-info-item">
-                            <span>Họ và Tên:</span>
-                            <strong><?php echo htmlspecialchars($fullname); ?></strong>
-                        </li>
-                        <li class="meta-info-item">
-                            <span>Đối tượng:</span>
-                            <strong><?php echo $role_label; ?></strong>
-                        </li>
-                        <?php if ($role === 'parent'): ?>
-                            <li class="meta-info-item">
-                                <span>Họ tên con:</span>
-                                <strong><?php echo htmlspecialchars($student_name); ?></strong>
-                            </li>
+                <!-- BÊN PHẢI: THÔNG TIN CHI TIẾT VÀ NÚT TẢI VỀ -->
+                <div class="lg:col-span-5 flex flex-col justify-center">
+                    <div class="p-8 md:p-10 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-xl">
+                        
+                        <!-- Hiển thị thông báo nếu vừa đăng ký xong -->
+                        <?php if (isset($_GET['new']) && $_GET['new'] == 1): ?>
+                            <div class="bg-emerald-50 border border-emerald-200/60 text-emerald-700 p-5 rounded-2xl mb-6 text-center shadow-sm animate-pulse">
+                                <div class="text-3xl text-emerald-500 mb-2"><i class="fa-solid fa-circle-check"></i></div>
+                                <h4 class="font-bold text-base mb-1">Đăng Ký Thành Công!</h4>
+                                <p class="text-xs text-slate-400">Thư mời của bạn đã được khởi tạo và lưu trữ.</p>
+                            </div>
                         <?php endif; ?>
-                        <li class="meta-info-item">
-                            <span>Số điện thoại:</span>
-                            <strong><?php echo htmlspecialchars($phone); ?></strong>
-                        </li>
-                    </ul>
- 
-                    <!-- PHẦN ĐỀ XUẤT VÉ THAM QUAN CHO PHÙ HỢP (PERSONALIZED RECOMMENDATION) -->
-                    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); padding: 1.2rem; border-radius: 16px; margin-bottom: 1.5rem;">
-                        <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; color: var(--<?php echo $theme_class; ?>-primary);">
-                            <?php if ($role === 'student'): ?>
-                                <i class="fa-solid fa-graduation-cap"></i> 🗺️ Lộ Trình Học Sinh Khuyên Dùng
-                            <?php else: ?>
-                                <i class="fa-solid fa-user-group"></i> 🗺️ Lộ Trình Phụ Huynh Khuyên Dùng
+
+                        <h3 class="text-xl font-extrabold text-slate-800 flex items-center gap-2.5 mb-6">
+                            <i class="fa-solid fa-circle-info <?php echo $accent_text; ?>"></i> Thông Tin Passport
+                        </h3>
+                        
+                        <ul class="divide-y divide-slate-100 mb-8">
+                            <li class="flex justify-between items-center py-3.5 text-sm text-slate-500">
+                                <span>Mã Passport:</span>
+                                <strong class="font-mono tracking-wider text-base <?php echo $accent_text; ?>"><?php echo htmlspecialchars($passport['passport_code']); ?></strong>
+                            </li>
+                            <li class="flex justify-between items-center py-3.5 text-sm text-slate-500">
+                                <span>Họ và Tên:</span>
+                                <strong class="text-slate-900 font-bold"><?php echo htmlspecialchars($fullname); ?></strong>
+                            </li>
+                            <li class="flex justify-between items-center py-3.5 text-sm text-slate-500">
+                                <span>Đối tượng:</span>
+                                <strong class="text-slate-900 font-bold"><?php echo $role_label; ?></strong>
+                            </li>
+                            <?php if ($role === 'parent'): ?>
+                                <li class="flex justify-between items-center py-3.5 text-sm text-slate-500">
+                                    <span>Họ tên con:</span>
+                                    <strong class="text-slate-900 font-bold"><?php echo htmlspecialchars($student_name); ?></strong>
+                                </li>
                             <?php endif; ?>
-                        </h4>
-                        <p style="font-size: 0.85rem; line-height: 1.5; color: #cbd5e1;">
-                            <?php if ($role === 'student'): ?>
-                                Chào em học sinh! Hãy hoàn thành các hoạt động tuyệt vời tại: <br>
-                                <strong>Khu gian hàng STEM 🔬 &rarr; Thử thách Thể thao vận động ⚽ &rarr; Sân khấu Lễ hội 🎤 &rarr; Nhận quà lưu niệm tại quầy Check-in chính.</strong>
-                            <?php else: ?>
-                                Chào quý phụ huynh! Hệ thống đề xuất lộ trình trải nghiệm bổ ích và thư giãn: <br>
-                                <strong>Triển lãm Sáng tạo của học sinh 🎨 &rarr; Hội thảo Định hướng & Chia sẻ 💼 &rarr; Trà đạo giáo viên thư giãn 🍵 &rarr; Đồng hành cùng con tại khu Trò chơi gia đình.</strong>
-                            <?php endif; ?>
-                        </p>
-                    </div>
- 
-                    <!-- Nút thao tác -->
-                    <div style="display: flex; flex-direction: column; gap: 0.8rem;" class="no-print">
-                        <button onclick="downloadPNG()" class="btn btn-primary btn-accent-<?php echo $theme_class; ?>" id="btn-download-png">
-                            <i class="fa-solid fa-file-image"></i> Tải ảnh Thư Mời (PNG)
-                        </button>
-                        <button onclick="downloadPDF()" class="btn btn-secondary">
-                            <i class="fa-solid fa-file-pdf"></i> Tải file PDF Thư Mời
-                        </button>
-                        <button onclick="window.print()" class="btn btn-secondary">
-                            <i class="fa-solid fa-print"></i> In trực tiếp qua trình duyệt
-                        </button>
+                            <li class="flex justify-between items-center py-3.5 text-sm text-slate-500">
+                                <span>Số điện thoại:</span>
+                                <strong class="text-slate-900 font-bold"><?php echo htmlspecialchars($phone); ?></strong>
+                            </li>
+                        </ul>
+
+                        <!-- Nút thao tác -->
+                        <div class="no-print">
+                            <button onclick="downloadPNG()" class="w-full inline-flex items-center justify-center gap-2 py-4 px-6 rounded-2xl font-bold text-base text-white bg-gradient-to-r <?php echo $accent_gradient; ?> shadow-lg <?php echo $accent_shadow_glow; ?> hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300" id="btn-download-png">
+                                <i class="fa-solid fa-file-image"></i> Tải ảnh Thư Mời (PNG)
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -198,7 +190,7 @@ if (!$passport) {
     </main>
 
     <!-- Footer -->
-    <footer class="no-print">
+    <footer class="text-center py-8 border-t border-slate-200/60 mt-auto text-slate-400 text-sm no-print">
         <p>&copy; 2026 Hệ thống Passport Điện Tử Học Đường. Phát triển bởi Antigravity AI.</p>
     </footer>
 
@@ -215,7 +207,7 @@ if (!$passport) {
             const invitationCard = document.getElementById('theme-thumoi');
             const btn = document.getElementById('btn-download-png');
             const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xuất ảnh...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang xuất ảnh...';
             btn.disabled = true;
 
             html2canvas(invitationCard, {
@@ -236,43 +228,6 @@ if (!$passport) {
                 btn.innerHTML = originalHTML;
                 btn.disabled = false;
                 console.error(err);
-            });
-        }
-
-        // TẢI FILE PDF (Chỉ tải Thư Mời)
-        function downloadPDF() {
-            const invitationCard = document.getElementById('theme-thumoi');
-            const btn = document.querySelector('button[onclick="downloadPDF()"]');
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xuất PDF...';
-            btn.disabled = true;
-
-            html2canvas(invitationCard, {
-                scale: 2.5,
-                useCORS: true,
-                logging: false
-            }).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                
-                // Đo kích thước thẻ thực tế
-                const width = invitationCard.offsetWidth;
-                const height = invitationCard.offsetHeight;
-                
-                // Căn hướng trang
-                const orientation = width > height ? 'l' : 'p';
-                
-                // Khởi tạo PDF có kích thước vừa khít
-                const pdf = new jsPDF(orientation, 'px', [width, height]);
-                pdf.addImage(imgData, 'PNG', 0, 0, width, height);
-                pdf.save('ThuMoi_' + '<?php echo $passport["passport_code"]; ?>' + '.pdf');
-                
-                btn.innerHTML = originalHTML;
-                btn.disabled = false;
-            }).catch(err => {
-                alert('Có lỗi xảy ra khi xuất file PDF! Vui lòng thử lại.');
-                btn.innerHTML = originalHTML;
-                btn.disabled = false;
             });
         }
     </script>

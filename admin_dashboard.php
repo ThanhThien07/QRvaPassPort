@@ -130,123 +130,155 @@ $passports_list = $stmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Quản Trị - Passport Điện Tử</title>
-    <!-- CSS chính -->
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        student: {
+                            primary: '#0284c7',
+                            secondary: '#1d4ed8',
+                            glow: 'rgba(2, 132, 199, 0.15)',
+                        },
+                        parent: {
+                            primary: '#d97706',
+                            secondary: '#c2410c',
+                            glow: 'rgba(217, 119, 6, 0.15)',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['Times New Roman', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- CSS chính (Tối giản chỉ giữ card & animation) -->
     <link rel="stylesheet" href="assets/css/style.css">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body class="min-h-screen flex flex-col antialiased text-slate-800">
 
     <!-- Header -->
-    <header class="no-print">
-        <a href="admin_dashboard.php" class="logo-container">
-            <div class="logo-icon">A</div>
+    <header class="sticky top-0 z-50 flex justify-between items-center px-6 py-4 bg-white/75 backdrop-blur-md border-b border-slate-200/80 no-print">
+        <a href="admin_dashboard.php" class="flex items-center gap-3 no-underline text-slate-900 group">
+            <div class="w-10 h-10 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl flex items-center justify-center font-extrabold text-white text-lg shadow-md group-hover:scale-105 transition-transform">A</div>
             <div>
-                <div class="logo-text">ADMIN PANEL</div>
-                <div class="logo-sub">Quản lý Passport</div>
+                <div class="text-lg font-extrabold tracking-tight leading-none">ADMIN PANEL</div>
+                <div class="text-[10px] text-slate-500 font-medium tracking-wider uppercase mt-0.5">Quản lý Passport</div>
             </div>
         </a>
-        <nav>
-            <a href="index.php" class="btn btn-secondary" target="_blank"><i class="fa-solid fa-globe"></i> Xem Trang Chủ</a>
-            <a href="admin_dashboard.php?action=logout" class="btn btn-secondary" style="background: rgba(239, 68, 68, 0.1); color: #f87171; border-color: rgba(239, 68, 68, 0.2);"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
+        <nav class="flex gap-3">
+            <a href="index.php" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200/80 hover:border-slate-300 active:bg-slate-100 transition-all duration-300" target="_blank"><i class="fa-solid fa-globe"></i> Xem Trang Chủ</a>
+            <a href="admin_dashboard.php?action=logout" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm bg-red-50 border border-red-100 text-red-600 hover:bg-red-100 active:bg-red-50 transition-all duration-300"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
         </nav>
     </header>
 
     <!-- Main Content -->
-    <main style="max-width: 1300px;">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-10">
         
         <!-- TIÊU ĐỀ DASHBOARD -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
             <div>
-                <h1 style="font-size: 2.2rem;">Hệ Thống Thống Kê & Quản Trị</h1>
-                <p style="color: var(--text-muted);">Chào mừng trở lại, <?php echo htmlspecialchars($_SESSION['admin_username']); ?>. Xem báo cáo và chỉnh sửa thông tin tại đây.</p>
+                <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Hệ Thống Thống Kê & Quản Trị</h1>
+                <p class="text-slate-400 text-sm mt-1">Chào mừng trở lại, <span class="font-bold text-slate-700"><?php echo htmlspecialchars($_SESSION['admin_username']); ?></span>. Xem báo cáo và chỉnh sửa thông tin tại đây.</p>
             </div>
-            <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
-                <a href="print_poster.php" class="btn btn-secondary" style="background: rgba(56, 189, 248, 0.1); color: #38bdf8; border-color: rgba(56, 189, 248, 0.2);" target="_blank">
-                    <i class="fa-solid fa-print"></i> In Poster QR Đăng Ký
+            <div class="flex gap-3 flex-wrap">
+                <a href="print_poster.php" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-sky-50 border border-sky-100 text-sky-600 shadow-sm hover:-translate-y-0.5 hover:shadow-md hover:bg-sky-100/60 active:translate-y-0 transition-all duration-300" target="_blank">
+                    <i class="fa-solid fa-print"></i> In Poster QR
                 </a>
-                <a href="admin_dashboard.php?action=export" class="btn btn-secondary" style="background: rgba(16, 185, 129, 0.1); color: #34d399; border-color: rgba(16, 185, 129, 0.2);">
-                    <i class="fa-solid fa-file-excel"></i> Xuất danh sách Excel
+                <a href="admin_dashboard.php?action=export" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-emerald-50 border border-emerald-100 text-emerald-600 shadow-sm hover:-translate-y-0.5 hover:shadow-md hover:bg-emerald-100/60 active:translate-y-0 transition-all duration-300">
+                    <i class="fa-solid fa-file-excel"></i> Xuất Excel
                 </a>
-                <button onclick="openAddModal()" class="btn btn-primary">
-                    <i class="fa-solid fa-user-plus"></i> Thêm thành viên mới
+                <button onclick="openAddModal()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-md shadow-sky-500/15 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 transition-all duration-300">
+                    <i class="fa-solid fa-user-plus"></i> Thêm thành viên
                 </button>
             </div>
         </div>
 
         <!-- THẺ THỐNG KÊ NHANH (STAT CARDS) -->
-        <section class="dashboard-grid">
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <!-- Tổng số lượng -->
-            <div class="glass-panel stat-card">
-                <div class="stat-info">
-                    <h4>Tổng Đăng Ký</h4>
-                    <div class="value" id="stat-total"><?php echo number_format($total_count); ?></div>
+            <div class="p-6 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-2xl shadow-md flex justify-between items-center">
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Tổng Đăng Ký</h4>
+                    <div class="text-3xl font-extrabold text-slate-800 mt-2" id="stat-total"><?php echo number_format($total_count); ?></div>
                 </div>
-                <div class="stat-icon stat-icon-total">
+                <div class="w-12 h-12 bg-slate-50 text-slate-500 rounded-xl flex items-center justify-center text-xl shadow-inner">
                     <i class="fa-solid fa-users"></i>
                 </div>
             </div>
 
             <!-- Học sinh -->
-            <div class="glass-panel stat-card" style="border-color: rgba(0, 240, 255, 0.2);">
-                <div class="stat-info">
-                    <h4>Học Sinh</h4>
-                    <div class="value" id="stat-student"><?php echo number_format($student_count); ?></div>
+            <div class="p-6 bg-white/85 backdrop-blur-md border border-sky-100/60 rounded-2xl shadow-md flex justify-between items-center">
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-sky-500">Học Sinh</h4>
+                    <div class="text-3xl font-extrabold text-slate-800 mt-2" id="stat-student"><?php echo number_format($student_count); ?></div>
                 </div>
-                <div class="stat-icon stat-icon-student">
+                <div class="w-12 h-12 bg-sky-50 text-sky-500 rounded-xl flex items-center justify-center text-xl shadow-inner">
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
             </div>
 
             <!-- Phụ huynh -->
-            <div class="glass-panel stat-card" style="border-color: rgba(255, 170, 0, 0.2);">
-                <div class="stat-info">
-                    <h4>Phụ Huynh</h4>
-                    <div class="value" id="stat-parent"><?php echo number_format($parent_count); ?></div>
+            <div class="p-6 bg-white/85 backdrop-blur-md border border-amber-100/60 rounded-2xl shadow-md flex justify-between items-center">
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-amber-600">Phụ Huynh</h4>
+                    <div class="text-3xl font-extrabold text-slate-800 mt-2" id="stat-parent"><?php echo number_format($parent_count); ?></div>
                 </div>
-                <div class="stat-icon stat-icon-parent">
+                <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center text-xl shadow-inner">
                     <i class="fa-solid fa-user-group"></i>
                 </div>
             </div>
         </section>
 
         <!-- BIỂU ĐỒ BÁO CÁO (CHARTS SECTION) -->
-        <section class="charts-grid">
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <!-- Biểu đồ tròn: Tỷ lệ -->
-            <div class="glass-panel chart-card">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1.5rem;"><i class="fa-solid fa-chart-pie"></i> Tỷ Lệ Nhóm Đối Tượng</h3>
-                <div class="chart-container">
+            <div class="p-6 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-2xl shadow-md">
+                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-6">
+                    <i class="fa-solid fa-chart-pie text-slate-400"></i> Tỷ Lệ Nhóm Đối Tượng
+                </h3>
+                <div class="relative h-64 w-full">
                     <canvas id="ratioChart"></canvas>
                 </div>
             </div>
 
             <!-- Biểu đồ đường: Tiến trình đăng ký -->
-            <div class="glass-panel chart-card">
-                <h3 style="font-size: 1.1rem; margin-bottom: 1.5rem;"><i class="fa-solid fa-chart-line"></i> Tốc Độ Đăng Ký Theo Thời Gian</h3>
-                <div class="chart-container">
+            <div class="p-6 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-2xl shadow-md">
+                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-6">
+                    <i class="fa-solid fa-chart-line text-slate-400"></i> Tốc Độ Đăng Ký Theo Thời Gian
+                </h3>
+                <div class="relative h-64 w-full">
                     <canvas id="trendChart"></canvas>
                 </div>
             </div>
         </section>
 
         <!-- BỘ LỌC TÌM KIẾM DANH SÁCH (FILTERS & TABLE) -->
-        <section class="glass-panel">
-            <h3 style="margin-bottom: 1.5rem; font-size: 1.3rem;"><i class="fa-solid fa-list-check text-gradient-student"></i> Danh Sách Đăng Ký Chi Tiết</h3>
+        <section class="p-6 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-xl">
+            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-6">
+                <i class="fa-solid fa-list-check text-sky-500"></i> Danh Sách Đăng Ký Chi Tiết
+            </h3>
             
             <!-- Panel bộ lọc -->
-            <form action="admin_dashboard.php" method="GET" class="filters-panel">
+            <form action="admin_dashboard.php" method="GET" class="flex flex-wrap gap-4 items-center mb-6">
                 <!-- Ô tìm kiếm từ khóa -->
-                <input type="text" name="search" class="filter-control" style="flex-grow: 1; min-width: 250px;" placeholder="Tìm tên, số điện thoại, mã Passport..." value="<?php echo htmlspecialchars($search); ?>">
+                <input type="text" name="search" class="flex-1 min-w-[250px] bg-slate-50 border border-slate-200/80 rounded-xl py-2.5 px-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300 text-sm" placeholder="Tìm tên, số điện thoại, mã Passport..." value="<?php echo htmlspecialchars($search); ?>">
                 
                 <!-- Lọc theo đối tượng -->
-                <select name="role" class="filter-control" style="min-width: 150px;">
-                    <option value="">-- Chọn đối tượng --</option>
+                <select name="role" class="min-w-[150px] bg-slate-50 border border-slate-200/80 rounded-xl py-2.5 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:bg-white transition-all duration-300 text-sm">
+                    <option value="">-- Đối tượng --</option>
                     <option value="student" <?php echo $filter_role === 'student' ? 'selected' : ''; ?>>Học sinh</option>
                     <option value="parent" <?php echo $filter_role === 'parent' ? 'selected' : ''; ?>>Phụ huynh</option>
                 </select>
 
                 <!-- Lọc theo lớp -->
-                <select name="class" class="filter-control" style="min-width: 130px;">
+                <select name="class" class="min-w-[130px] bg-slate-50 border border-slate-200/80 rounded-xl py-2.5 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:bg-white transition-all duration-300 text-sm">
                     <option value="">-- Chọn lớp --</option>
                     <?php foreach ($classes_list as $cls): ?>
                         <option value="<?php echo htmlspecialchars($cls); ?>" <?php echo $filter_class === $cls ? 'selected' : ''; ?>>
@@ -256,75 +288,79 @@ $passports_list = $stmt->fetchAll();
                 </select>
 
                 <!-- Nút áp dụng bộ lọc -->
-                <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-filter"></i> Lọc</button>
+                <button type="submit" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200/80 transition-all"><i class="fa-solid fa-filter"></i> Lọc</button>
                 
                 <!-- Nút Reset bộ lọc -->
                 <?php if (!empty($search) || !empty($filter_role) || !empty($filter_class)): ?>
-                    <a href="admin_dashboard.php" class="btn btn-secondary" style="background: rgba(255, 255, 255, 0.02);"><i class="fa-solid fa-rotate-left"></i> Reset</a>
+                    <a href="admin_dashboard.php" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-slate-50 border border-slate-200/80 text-slate-600 hover:bg-slate-100 transition-all"><i class="fa-solid fa-rotate-left"></i> Reset</a>
                 <?php endif; ?>
             </form>
 
             <!-- Bảng dữ liệu (Data Table) -->
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
+            <div class="overflow-x-auto border border-slate-100 rounded-2xl">
+                <table class="min-w-full divide-y divide-slate-100 text-left">
+                    <thead class="bg-slate-50/50">
                         <tr>
-                            <th>Ảnh</th>
-                            <th>Mã Passport</th>
-                            <th>Họ và Tên</th>
-                            <th>Đối Tượng</th>
-                            <th>Lớp</th>
-                            <th>Thông Tin Con (PH)</th>
-                            <th>Số Điện Thoại</th>
-                            <th>Ngày Đăng Ký</th>
-                            <th style="text-align: center;">Thao Tác</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase">Ảnh</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase">Mã Passport</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase">Họ và Tên</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase">Đối Tượng</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase">Lớp</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase">Thông Tin Con (PH)</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase">Số Điện Thoại</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase">Ngày Đăng Ký</th>
+                            <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase text-center">Thao Tác</th>
                         </tr>
                     </thead>
-                    <tbody id="table-body">
+                    <tbody class="divide-y divide-slate-100 bg-white/50" id="table-body">
                         <?php if (empty($passports_list)): ?>
                             <tr>
-                                <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 3rem;">
-                                    <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; margin-bottom: 1rem; display: block;"></i>
+                                <td colspan="9" class="text-center text-slate-400 py-12">
+                                    <i class="fa-solid fa-folder-open text-4xl mb-3 block"></i>
                                     Không tìm thấy dữ liệu đăng ký nào phù hợp với bộ lọc!
                                 </td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($passports_list as $row): ?>
-                                <tr id="row-<?php echo $row['id']; ?>">
-                                    <td>
-                                        <img class="table-avatar" src="<?php echo htmlspecialchars($row['avatar']); ?>" alt="Avatar">
+                                <tr class="hover:bg-slate-50/40 transition-colors" id="row-<?php echo $row['id']; ?>">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <img class="w-9 h-9 rounded-full object-cover border border-slate-200" src="<?php echo htmlspecialchars($row['avatar']); ?>" alt="Avatar">
                                     </td>
-                                    <td style="font-family: monospace; font-weight: 700; letter-spacing: 0.5px;">
+                                    <td class="px-6 py-4 whitespace-nowrap font-mono font-bold tracking-wide text-slate-800">
                                         <?php echo htmlspecialchars($row['passport_code']); ?>
                                     </td>
-                                    <td style="font-weight: 600;">
+                                    <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-800">
                                         <?php echo htmlspecialchars($row['fullname']); ?>
                                     </td>
-                                    <td>
-                                        <span class="badge-role badge-role-<?php echo $row['role']; ?>">
-                                            <?php echo $row['role'] === 'student' ? 'Học sinh' : 'Phụ huynh'; ?>
-                                        </span>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <?php if ($row['role'] === 'student'): ?>
+                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-sky-50 border border-sky-100 text-sky-600">Học sinh</span>
+                                        <?php else: ?>
+                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 border border-amber-100 text-amber-600">Phụ huynh</span>
+                                        <?php endif; ?>
                                     </td>
-                                    <td><strong>Lớp <?php echo htmlspecialchars($row['student_class']); ?></strong></td>
-                                    <td style="color: #cbd5e1; font-size: 0.85rem;">
+                                    <td class="px-6 py-4 whitespace-nowrap text-slate-700 font-semibold">
+                                        <?php echo !empty($row['student_class']) ? 'Lớp ' . htmlspecialchars($row['student_class']) : '-'; ?>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-slate-500 font-medium">
                                         <?php echo $row['role'] === 'parent' ? htmlspecialchars($row['student_name']) : '-'; ?>
                                     </td>
-                                    <td><?php echo htmlspecialchars($row['phone']); ?></td>
-                                    <td style="color: var(--text-muted); font-size: 0.85rem;">
+                                    <td class="px-6 py-4 whitespace-nowrap text-slate-700 font-semibold"><?php echo htmlspecialchars($row['phone']); ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-slate-400 text-xs">
                                         <?php echo date('d/m H:i', strtotime($row['created_at'])); ?>
                                     </td>
-                                    <td>
-                                        <div class="action-btns" style="justify-content: center;">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex gap-2 justify-center">
                                             <!-- Xem Passport -->
-                                            <a href="passport.php?code=<?php echo $row['passport_code']; ?>" class="btn-icon btn-view" title="Xem Passport" target="_blank">
+                                            <a href="passport.php?code=<?php echo $row['passport_code']; ?>" class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center hover:bg-sky-100 transition-colors" title="Xem Passport" target="_blank">
                                                 <i class="fa-solid fa-eye"></i>
                                             </a>
                                             <!-- Chỉnh sửa -->
-                                            <button onclick="openEditModal(<?php echo $row['id']; ?>)" class="btn-icon btn-edit" title="Chỉnh sửa thông tin">
+                                            <button onclick="openEditModal(<?php echo $row['id']; ?>)" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-emerald-100 transition-colors" title="Chỉnh sửa thông tin">
                                                 <i class="fa-solid fa-pen-to-square"></i>
                                             </button>
                                             <!-- Xóa -->
-                                            <button onclick="deleteMember(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['fullname']); ?>')" class="btn-icon btn-delete" title="Xóa Passport">
+                                            <button onclick="deleteMember(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['fullname']); ?>')" class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-100 transition-colors" title="Xóa Passport">
                                                 <i class="fa-solid fa-trash-can"></i>
                                             </button>
                                         </div>
@@ -341,52 +377,52 @@ $passports_list = $stmt->fetchAll();
     <!-- ============================================== -->
     <!-- 1. MODAL CHỈNH SỬA THÔNG TIN (EDIT MODAL) -->
     <div id="editModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeEditModal()">&times;</button>
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-user-pen text-gradient-student"></i> Chỉnh Sửa Thông Tin Passport</h3>
-                <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem;">Mã Passport: <strong id="edit-passport-code" style="color: #fff;"></strong></p>
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 max-w-lg w-full mx-4 shadow-2xl relative animate-[scaleIn_0.3s_ease]">
+            <button class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 text-2xl font-bold outline-none" onclick="closeEditModal()">&times;</button>
+            <div class="mb-6">
+                <h3 class="text-xl font-extrabold text-slate-800"><i class="fa-solid fa-user-pen text-sky-500 mr-1.5"></i> Chỉnh Sửa Passport</h3>
+                <p class="text-slate-400 text-xs mt-1">Mã Passport: <strong id="edit-passport-code" class="text-slate-700"></strong></p>
             </div>
             
-            <form id="editForm" onsubmit="submitEditForm(event)">
+            <form id="editForm" onsubmit="submitEditForm(event)" class="space-y-4">
                 <input type="hidden" name="id" id="edit-id">
                 
                 <!-- Họ tên -->
-                <div class="form-group">
-                    <label class="form-label">Họ và Tên</label>
-                    <input type="text" name="fullname" id="edit-fullname" class="form-control" required>
+                <div>
+                    <label class="block font-semibold text-slate-700 text-sm mb-2">Họ và Tên</label>
+                    <input type="text" name="fullname" id="edit-fullname" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300 text-sm" required>
                 </div>
 
                 <!-- Vai trò -->
-                <div class="form-group">
-                    <label class="form-label">Đối Tượng</label>
-                    <select name="role" id="edit-role" class="form-control" onchange="toggleEditModalFields(this.value)" required>
+                <div>
+                    <label class="block font-semibold text-slate-700 text-sm mb-2">Đối Tượng</label>
+                    <select name="role" id="edit-role" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:bg-white transition-all duration-300 text-sm" onchange="toggleEditModalFields(this.value)" required>
                         <option value="student">Học sinh</option>
                         <option value="parent">Phụ huynh</option>
                     </select>
                 </div>
 
-                <!-- Lớp học -->
-                <div class="form-group">
-                    <label class="form-label" id="edit-label-class">Lớp Học</label>
-                    <input type="text" name="student_class" id="edit-class" class="form-control" required>
+                <!-- Lớp học (Ẩn/Hiện bằng JS nhưng vẫn gửi lên nếu cần, tuy nhiên đã lược bỏ lớp lúc đăng ký, ta có thể để trống hoặc cho sửa lớp) -->
+                <div>
+                    <label class="block font-semibold text-slate-700 text-sm mb-2" id="edit-label-class">Lớp Học</label>
+                    <input type="text" name="student_class" id="edit-class" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300 text-sm">
                 </div>
 
                 <!-- Tên con (Chỉ hiện khi là Phụ huynh) -->
-                <div class="form-group" id="edit-group-student-name" style="display: none;">
-                    <label class="form-label">Họ và Tên Con</label>
-                    <input type="text" name="student_name" id="edit-student-name" class="form-control">
+                <div id="edit-group-student-name" style="display: none;">
+                    <label class="block font-semibold text-slate-700 text-sm mb-2">Họ và Tên Con</label>
+                    <input type="text" name="student_name" id="edit-student-name" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300 text-sm">
                 </div>
 
                 <!-- Số điện thoại -->
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label class="form-label">Số Điện Thoại</label>
-                    <input type="tel" name="phone" id="edit-phone" class="form-control" required>
+                <div>
+                    <label class="block font-semibold text-slate-700 text-sm mb-2">Số Điện Thoại</label>
+                    <input type="tel" name="phone" id="edit-phone" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300 text-sm" required>
                 </div>
 
-                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" class="px-5 py-2.5 rounded-xl font-bold text-sm bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200/80 transition-all" onclick="closeEditModal()">Hủy</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-md hover:brightness-105 active:scale-[0.98] transition-all">Lưu thay đổi</button>
                 </div>
             </form>
         </div>
@@ -395,57 +431,57 @@ $passports_list = $stmt->fetchAll();
     <!-- ============================================== -->
     <!-- 2. MODAL THÊM MỚI THỦ CÔNG (ADD MODAL) -->
     <div id="addModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeAddModal()">&times;</button>
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-user-plus text-gradient-student"></i> Thêm Passport Thủ Công</h3>
-                <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem;">Tạo nhanh Passport cho khách hoặc trường hợp lỗi</p>
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 max-w-lg w-full mx-4 shadow-2xl relative animate-[scaleIn_0.3s_ease]">
+            <button class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 text-2xl font-bold outline-none" onclick="closeAddModal()">&times;</button>
+            <div class="mb-6">
+                <h3 class="text-xl font-extrabold text-slate-800"><i class="fa-solid fa-user-plus text-sky-500 mr-1.5"></i> Thêm Passport Thủ Công</h3>
+                <p class="text-slate-400 text-xs mt-1">Tạo nhanh Passport cho khách hoặc trường hợp lỗi</p>
             </div>
             
-            <form id="addForm" onsubmit="submitAddForm(event)">
+            <form id="addForm" onsubmit="submitAddForm(event)" class="space-y-4">
                 <!-- Họ tên -->
-                <div class="form-group">
-                    <label class="form-label">Họ và Tên</label>
-                    <input type="text" name="fullname" class="form-control" placeholder="Nhập họ tên đầy đủ..." required>
+                <div>
+                    <label class="block font-semibold text-slate-700 text-sm mb-2">Họ và Tên</label>
+                    <input type="text" name="fullname" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300 text-sm" placeholder="Nhập họ tên đầy đủ..." required>
                 </div>
 
                 <!-- Vai trò -->
-                <div class="form-group">
-                    <label class="form-label">Đối Tượng</label>
-                    <select name="role" class="form-control" onchange="toggleAddModalFields(this.value)" required>
+                <div>
+                    <label class="block font-semibold text-slate-700 text-sm mb-2">Đối Tượng</label>
+                    <select name="role" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:bg-white transition-all duration-300 text-sm" onchange="toggleAddModalFields(this.value)" required>
                         <option value="student" selected>Học sinh</option>
                         <option value="parent">Phụ huynh</option>
                     </select>
                 </div>
 
                 <!-- Lớp học -->
-                <div class="form-group">
-                    <label class="form-label" id="add-label-class">Lớp Học</label>
-                    <input type="text" name="student_class" class="form-control" placeholder="Ví dụ: 11A2..." required>
+                <div>
+                    <label class="block font-semibold text-slate-700 text-sm mb-2" id="add-label-class">Lớp Học</label>
+                    <input type="text" name="student_class" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300 text-sm" placeholder="Ví dụ: 11A2...">
                 </div>
 
                 <!-- Tên con (Chỉ hiện khi là Phụ huynh) -->
-                <div class="form-group" id="add-group-student-name" style="display: none;">
-                    <label class="form-label">Họ và Tên Con</label>
-                    <input type="text" name="student_name" class="form-control" placeholder="Nhập họ tên của con...">
+                <div id="add-group-student-name" style="display: none;">
+                    <label class="block font-semibold text-slate-700 text-sm mb-2">Họ và Tên Con</label>
+                    <input type="text" name="student_name" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300 text-sm" placeholder="Nhập họ tên của con...">
                 </div>
 
                 <!-- Số điện thoại -->
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label class="form-label">Số Điện Thoại</label>
-                    <input type="tel" name="phone" class="form-control" placeholder="Nhập số điện thoại..." required>
+                <div>
+                    <label class="block font-semibold text-slate-700 text-sm mb-2">Số Điện Thoại</label>
+                    <input type="tel" name="phone" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300 text-sm" placeholder="Nhập số điện thoại..." required>
                 </div>
 
-                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-                    <button type="button" class="btn btn-secondary" onclick="closeAddModal()">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Thêm Mới</button>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" class="px-5 py-2.5 rounded-xl font-bold text-sm bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200/80 transition-all" onclick="closeAddModal()">Hủy</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl font-bold text-sm bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-md hover:brightness-105 active:scale-[0.98] transition-all">Thêm Mới</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Footer -->
-    <footer class="no-print">
+    <footer class="text-center py-6 border-t border-slate-200/60 mt-auto text-slate-400 text-sm no-print">
         <p>&copy; 2026 Hệ thống Passport Điện Tử Học Đường. Phát triển bởi Antigravity AI.</p>
     </footer>
 
@@ -467,8 +503,8 @@ $passports_list = $stmt->fetchAll();
                         <?php echo $ratio_data['student']; ?>, 
                         <?php echo $ratio_data['parent']; ?>
                     ],
-                    backgroundColor: ['#00f0ff', '#ffaa00'],
-                    borderColor: '#0f172a',
+                    backgroundColor: ['#0284c7', '#d97706'],
+                    borderColor: '#ffffff',
                     borderWidth: 3,
                     hoverOffset: 4
                 }]
@@ -480,7 +516,7 @@ $passports_list = $stmt->fetchAll();
                     legend: {
                         position: 'bottom',
                         labels: {
-                            color: '#8a99ad',
+                            color: '#64748b',
                             font: { family: 'Outfit', size: 12, weight: 'bold' }
                         }
                     }
@@ -497,13 +533,13 @@ $passports_list = $stmt->fetchAll();
                 datasets: [{
                     label: 'Số lượng đăng ký',
                     data: <?php echo json_encode($trend_values); ?>,
-                    borderColor: '#00f0ff',
-                    backgroundColor: 'rgba(0, 240, 255, 0.05)',
+                    borderColor: '#0284c7',
+                    backgroundColor: 'rgba(2, 132, 199, 0.05)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.3,
-                    pointBackgroundColor: '#00f0ff',
-                    pointBorderColor: '#0f172a',
+                    pointBackgroundColor: '#0284c7',
+                    pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 6,
                     pointHoverRadius: 8
@@ -517,13 +553,13 @@ $passports_list = $stmt->fetchAll();
                 },
                 scales: {
                     x: {
-                        grid: { color: 'rgba(255, 255, 255, 0.03)' },
-                        ticks: { color: '#8a99ad', font: { family: 'Outfit' } }
+                        grid: { color: 'rgba(0, 0, 0, 0.04)' },
+                        ticks: { color: '#64748b', font: { family: 'Outfit' } }
                     },
                     y: {
-                        grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                        grid: { color: 'rgba(0, 0, 0, 0.04)' },
                         ticks: { 
-                            color: '#8a99ad', 
+                            color: '#64748b', 
                             font: { family: 'Outfit' },
                             stepSize: 1, // Đảm bảo số nguyên
                             beginAtZero: true 
@@ -559,7 +595,7 @@ $passports_list = $stmt->fetchAll();
                         document.getElementById('edit-id').value = data.id;
                         document.getElementById('edit-fullname').value = data.fullname;
                         document.getElementById('edit-role').value = data.role;
-                        document.getElementById('edit-class').value = data.student_class;
+                        document.getElementById('edit-class').value = data.student_class || '';
                         document.getElementById('edit-student-name').value = data.student_name || '';
                         document.getElementById('edit-phone').value = data.phone;
                         document.getElementById('edit-passport-code').textContent = data.passport_code;
@@ -627,6 +663,18 @@ $passports_list = $stmt->fetchAll();
             document.getElementById('addModal').classList.add('show');
         }
 
+        // Đóng Add Modal bằng click bên ngoài
+        window.onclick = function(event) {
+            const editModal = document.getElementById('editModal');
+            const addModal = document.getElementById('addModal');
+            if (event.target == editModal) {
+                closeEditModal();
+            }
+            if (event.target == addModal) {
+                closeAddModal();
+            }
+        }
+
         function closeAddModal() {
             document.getElementById('addModal').classList.remove('show');
         }
@@ -688,10 +736,10 @@ $passports_list = $stmt->fetchAll();
                             
                             // Xác định vai trò để trừ
                             const roleBadge = row.querySelector('.badge-role');
-                            if (roleBadge.classList.contains('badge-role-student')) {
+                            if (roleBadge && roleBadge.textContent.trim().toLowerCase().includes('học sinh')) {
                                 let student = parseInt(studentEl.textContent.replace(/,/g, '')) - 1;
                                 studentEl.textContent = student.toLocaleString();
-                            } else {
+                            } else if (parentEl) {
                                 let parent = parseInt(parentEl.textContent.replace(/,/g, '')) - 1;
                                 parentEl.textContent = parent.toLocaleString();
                             }

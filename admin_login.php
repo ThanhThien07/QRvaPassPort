@@ -40,77 +40,103 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Nhập Quản Trị - Passport Điện Tử</title>
-    <!-- CSS chính -->
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        student: {
+                            primary: '#0284c7',
+                            secondary: '#1d4ed8',
+                            glow: 'rgba(2, 132, 199, 0.15)',
+                        },
+                        parent: {
+                            primary: '#d97706',
+                            secondary: '#c2410c',
+                            glow: 'rgba(217, 119, 6, 0.15)',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['Times New Roman', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- CSS chính (Tối giản chỉ giữ card & animation) -->
     <link rel="stylesheet" href="assets/css/style.css">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body class="min-h-screen flex flex-col antialiased text-slate-800">
 
     <!-- Header -->
-    <header>
-        <a href="index.php" class="logo-container">
-            <div class="logo-icon">P</div>
+    <header class="sticky top-0 z-50 flex justify-between items-center px-6 py-4 bg-white/75 backdrop-blur-md border-b border-slate-200/80 no-print">
+        <a href="index.php" class="flex items-center gap-3 no-underline text-slate-900 group">
+            <div class="w-10 h-10 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl flex items-center justify-center font-extrabold text-white text-lg shadow-md group-hover:scale-105 transition-transform">P</div>
             <div>
-                <div class="logo-text">PASSPORT</div>
-                <div class="logo-sub">Điện Tử Học Đường</div>
+                <div class="text-lg font-extrabold tracking-tight leading-none">PASSPORT</div>
+                <div class="text-[10px] text-slate-500 font-medium tracking-wider uppercase mt-0.5">Điện Tử Học Đường</div>
             </div>
         </a>
         <nav>
-            <a href="index.php" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Quay lại</a>
+            <a href="index.php" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200/80 hover:border-slate-300 active:bg-slate-100 transition-all duration-300"><i class="fa-solid fa-arrow-left"></i> Quay lại</a>
         </nav>
     </header>
 
     <!-- Main Content -->
-    <main>
-        <div class="login-container">
-            <div class="glass-panel">
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <div style="width: 60px; height: 60px; background: rgba(0, 240, 255, 0.1); color: var(--student-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1rem auto; box-shadow: 0 0 15px rgba(0,240,255,0.15);">
+    <main class="flex-1 flex items-center justify-center px-6 py-12">
+        <div class="max-w-md w-full">
+            <div class="p-8 md:p-10 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-xl">
+                <div class="text-center mb-8">
+                    <div class="w-14 h-14 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-md shadow-sky-500/5">
                         <i class="fa-solid fa-user-shield"></i>
                     </div>
-                    <h2 style="font-size: 1.8rem;">Đăng Nhập Admin</h2>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem;">Khu vực dành riêng cho Ban tổ chức / Quản trị viên</p>
+                    <h2 class="text-2xl font-extrabold text-slate-800">Đăng Nhập Admin</h2>
+                    <p class="text-slate-400 text-sm mt-2">Khu vực dành riêng cho Ban tổ chức / Quản trị viên</p>
                 </div>
 
                 <!-- Hiển thị thông báo lỗi -->
                 <?php if (!empty($login_error)): ?>
-                    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 0.8rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.9rem; display: flex; align-items: center; gap: 0.8rem;">
-                        <i class="fa-solid fa-circle-exclamation"></i>
+                    <div class="bg-red-50 border border-red-200 text-red-600 p-4 rounded-2xl mb-6 text-sm flex items-center gap-3">
+                        <i class="fa-solid fa-circle-exclamation text-lg"></i>
                         <span><?php echo $login_error; ?></span>
                     </div>
                 <?php endif; ?>
 
                 <!-- Form đăng nhập -->
-                <form action="admin_login.php" method="POST">
+                <form action="admin_login.php" method="POST" class="space-y-5">
                     <!-- Username -->
-                    <div class="form-group">
-                        <label class="form-label"><i class="fa-solid fa-user"></i> Tên đăng nhập</label>
-                        <input type="text" name="username" class="form-control" placeholder="Tài khoản mặc định: admin" required autocomplete="off">
+                    <div>
+                        <label class="block font-semibold text-slate-700 text-sm mb-2"><i class="fa-solid fa-user mr-1.5 text-slate-400"></i> Tên đăng nhập</label>
+                        <input type="text" name="username" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3.5 px-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300" placeholder="Tài khoản mặc định: admin" required autocomplete="off">
                     </div>
 
                     <!-- Password -->
-                    <div class="form-group" style="margin-bottom: 2rem;">
-                        <label class="form-label"><i class="fa-solid fa-lock"></i> Mật khẩu</label>
-                        <input type="password" name="password" class="form-control" placeholder="Mật khẩu mặc định: admin123" required>
+                    <div>
+                        <label class="block font-semibold text-slate-700 text-sm mb-2"><i class="fa-solid fa-lock mr-1.5 text-slate-400"></i> Mật khẩu</label>
+                        <input type="password" name="password" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3.5 px-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300" placeholder="Mật khẩu mặc định: admin123" required>
                     </div>
 
                     <!-- Nút Submit -->
-                    <button type="submit" class="btn btn-primary btn-accent-student" style="width: 100%; padding: 0.85rem; font-size: 1rem;">
-                        <i class="fa-solid fa-right-to-bracket"></i> Đăng Nhập Hệ Thống
+                    <button type="submit" class="w-full py-4 px-6 rounded-2xl font-bold text-base text-white bg-gradient-to-r from-sky-500 to-blue-600 shadow-lg shadow-sky-500/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-sky-500/30 hover:brightness-105 active:translate-y-0 active:shadow-lg transition-all duration-300">
+                        <i class="fa-solid fa-right-to-bracket mr-1.5"></i> Đăng Nhập Hệ Thống
                     </button>
                 </form>
                 
-                <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid var(--border-color); padding-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
-                    <p><i class="fa-solid fa-info-circle"></i> Tài khoản trải nghiệm:</p>
-                    <p style="font-family: monospace; margin-top: 0.2rem; color: #fff;">User: admin / Pass: admin123</p>
+                <div class="mt-6 pt-5 border-t border-slate-100 text-center text-slate-400 text-xs">
+                    <p class="mb-1"><i class="fa-solid fa-info-circle mr-1"></i> Tài khoản trải nghiệm:</p>
+                    <p class="font-mono font-bold text-slate-600">User: <span class="text-sky-600">admin</span> / Pass: <span class="text-sky-600">admin123</span></p>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer>
+    <footer class="text-center py-6 border-t border-slate-200/60 mt-auto text-slate-400 text-sm no-print">
         <p>&copy; 2026 Hệ thống Passport Điện Tử Học Đường. Phát triển bởi Antigravity AI.</p>
     </footer>
 

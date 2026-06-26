@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fullname = trim($_POST['fullname'] ?? '');
     $role = trim($_POST['role'] ?? 'student');
     $phone = trim($_POST['phone'] ?? '');
-    $student_class = trim($_POST['student_class'] ?? '');
+    $student_class = ''; // Lớp học đã được lược bỏ theo yêu cầu
     $student_name = trim($_POST['student_name'] ?? '');
 
     // 1. Kiểm tra hợp lệ dữ liệu đầu vào
@@ -21,11 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!in_array($role, ['student', 'parent'])) $role = 'student';
     
     if ($role === 'student') {
-        if (empty($student_class)) $errors[] = 'Vui lòng nhập lớp học của bạn!';
         $student_name = null; // Học sinh thì không cần tên con
     } else {
         if (empty($student_name)) $errors[] = 'Vui lòng nhập họ tên con của bạn!';
-        if (empty($student_class)) $errors[] = 'Vui lòng nhập lớp của con!';
     }
 
     // 2. Kiểm tra xem số điện thoại đã đăng ký chưa
@@ -39,33 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 3. Xử lý tải lên ảnh đại diện (Avatar)
-    $avatar_path = 'uploads/default.png'; // Mặc định
-    
-    if (empty($errors) && isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
-        $file_tmp = $_FILES['avatar']['tmp_name'];
-        $file_name = $_FILES['avatar']['name'];
-        $file_size = $_FILES['avatar']['size'];
-        $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-        
-        $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        
-        if (!in_array($file_ext, $allowed_exts)) {
-            $errors[] = 'Định dạng ảnh không hợp lệ! Chỉ chấp nhận JPG, JPEG, PNG, GIF, WEBP.';
-        } elseif ($file_size > 5 * 1024 * 1024) { // Giới hạn 5MB
-            $errors[] = 'Kích thước ảnh quá lớn! Vui lòng tải ảnh dưới 5MB.';
-        } else {
-            // Tạo tên file ngẫu nhiên duy nhất để tránh trùng lặp
-            $new_file_name = 'avatar_' . time() . '_' . rand(1000, 9999) . '.' . $file_ext;
-            $upload_dir = 'uploads/';
-            
-            if (move_uploaded_file($file_tmp, $upload_dir . $new_file_name)) {
-                $avatar_path = $upload_dir . $new_file_name;
-            } else {
-                $errors[] = 'Có lỗi xảy ra khi lưu trữ ảnh đại diện. Vui lòng thử lại!';
-            }
-        }
-    }
+    // 3. Xử lý ảnh đại diện (Mặc định theo yêu cầu, không cần tải lên)
+    $avatar_path = 'uploads/default.png';
 
     // 4. Lưu vào database và chuyển hướng
     if (empty($errors)) {
@@ -148,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
 
                 <!-- Form -->
-                <form action="register.php" method="POST" enctype="multipart/form-data">
+                <form action="register.php" method="POST">
                     
                     <!-- Lựa chọn đối tượng (Role) -->
                     <div class="form-group">
@@ -182,33 +155,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <!-- Trường thông tin thay đổi theo đối tượng -->
-                    <!-- 1. Lớp học (dành cho Học sinh hoặc lớp của Con phụ huynh) -->
-                    <div class="form-group" id="group-class">
-                        <label class="form-label" id="label-class"><i class="fa-solid fa-school"></i> Lớp Học</label>
-                        <input type="text" name="student_class" class="form-control" placeholder="Ví dụ: 10A1, 12A5..." value="<?php echo htmlspecialchars($_POST['student_class'] ?? ''); ?>">
-                    </div>
-
-                    <!-- 2. Tên của con (Chỉ hiện khi là Phụ huynh) -->
+                    <!-- Tên của con (Chỉ hiện khi là Phụ huynh) -->
                     <div class="form-group" id="group-student-name" style="display: none;">
                         <label class="form-label"><i class="fa-solid fa-child"></i> Họ và Tên Con (Học sinh)</label>
                         <input type="text" name="student_name" class="form-control" placeholder="Nhập họ tên đầy đủ của con..." value="<?php echo htmlspecialchars($_POST['student_name'] ?? ''); ?>">
-                    </div>
-
-                    <!-- Upload ảnh chân dung -->
-                    <div class="form-group">
-                        <label class="form-label"><i class="fa-solid fa-camera"></i> Ảnh Chân Dung (Chụp rõ mặt)</label>
-                        <div class="avatar-upload-wrapper">
-                            <div class="avatar-preview-box">
-                                <img id="avatar-preview" src="uploads/default.png" alt="Ảnh xem trước">
-                            </div>
-                            <div class="upload-btn-wrapper">
-                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('avatar-input').click()" style="margin-bottom: 0.5rem; width: 100%;">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i> Chọn ảnh chân dung
-                                </button>
-                                <input type="file" id="avatar-input" name="avatar" accept="image/*" style="display: none;" onchange="previewImage(this)">
-                                <p style="font-size: 0.75rem; color: var(--text-muted);">Hỗ trợ JPG, PNG, WEBP. Dung lượng tối đa 5MB. Không chọn sẽ dùng avatar mặc định.</p>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Nút Submit -->
@@ -234,7 +184,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const formGlow = document.getElementById('form-glow');
             const formTitle = document.getElementById('form-title');
             const labelFullname = document.getElementById('label-fullname');
-            const labelClass = document.getElementById('label-class');
             const groupStudentName = document.getElementById('group-student-name');
             const btnSubmit = document.getElementById('btn-submit');
 
@@ -249,7 +198,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // Thay đổi Label và ẩn/hiện trường thông tin
                 labelFullname.innerHTML = '<i class="fa-solid fa-user"></i> Họ và Tên Học Sinh';
-                labelClass.innerHTML = '<i class="fa-solid fa-school"></i> Lớp Học';
                 groupStudentName.style.display = 'none';
                 
                 // Thay đổi nút submit
@@ -265,25 +213,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // Thay đổi Label và ẩn/hiện trường thông tin
                 labelFullname.innerHTML = '<i class="fa-solid fa-user"></i> Họ và Tên Phụ Huynh';
-                labelClass.innerHTML = '<i class="fa-solid fa-school"></i> Lớp Học Của Con';
                 groupStudentName.style.display = 'block';
                 
                 // Thay đổi nút submit
                 btnSubmit.className = 'btn btn-primary btn-accent-parent';
-            }
-        }
-
-        // Xem trước ảnh chân dung sau khi chọn file
-        function previewImage(input) {
-            const preview = document.getElementById('avatar-preview');
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                }
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                preview.src = 'uploads/default.png';
             }
         }
 

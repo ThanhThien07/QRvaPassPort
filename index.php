@@ -70,14 +70,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_query'])) {
             </h1>
             <p class="hero-subtitle">
                 Giải pháp thông minh, hiện đại dành cho Học sinh & Phụ huynh. <br>
-                Đăng ký thông tin nhanh chóng, nhận ngay thẻ Passport điện tử thời thượng với mã QR cá nhân để check-in và nhận quà tại sự kiện.
+                Đăng ký nhanh chóng để nhận Thư mời điện tử sang trọng và Lộ trình tham quan cá nhân hóa cho ngày hội.
             </p>
             <div class="hero-actions">
                 <a href="register.php" class="btn btn-primary btn-accent-student" style="padding: 1rem 2rem; font-size: 1.1rem;">
-                    <i class="fa-solid fa-pen-to-square"></i> Đăng Ký Passport Mới
+                    <i class="fa-solid fa-pen-to-square"></i> Đăng Ký Thư Mời & Lộ Trình
                 </a>
                 <a href="#lookup" class="btn btn-secondary" style="padding: 1rem 2rem; font-size: 1.1rem;">
-                    <i class="fa-solid fa-magnifying-glass"></i> Tra Cứu Passport Cũ
+                    <i class="fa-solid fa-magnifying-glass"></i> Tra Cứu Thư Mời Cũ
                 </a>
             </div>
         </section>
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_query'])) {
         <!-- Search Section -->
         <section id="lookup" class="glass-panel search-container" style="margin-bottom: 4rem; scroll-margin-top: 100px;">
             <h3 style="text-align: center; margin-bottom: 1.5rem; font-size: 1.5rem;">
-                <i class="fa-solid fa-search text-gradient-student"></i> Tra Cứu Passport Của Bạn
+                <i class="fa-solid fa-search text-gradient-student"></i> Tra Cứu Thư Mời Của Bạn
             </h3>
             
             <?php if (!empty($search_error)): ?>
@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_query'])) {
                 </div>
             </form>
             <p style="text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-top: 1rem;">
-                * Nhập đúng số điện thoại đã sử dụng khi đăng ký để mở lại Passport của bạn.
+                * Nhập đúng số điện thoại đã sử dụng khi đăng ký để mở lại thư mời của bạn.
             </p>
         </section>
 
@@ -116,27 +116,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_query'])) {
                 </div>
                 <h3 style="margin-bottom: 1rem;">1. Đăng ký thông tin</h3>
                 <p style="color: var(--text-muted); font-size: 0.95rem;">
-                    Điền thông tin cá nhân cơ bản và tải lên ảnh chân dung đẹp nhất của bạn. Hệ thống sẽ tự động phân loại Học sinh và Phụ huynh để áp dụng giao diện riêng biệt.
+                    Điền thông tin cá nhân cơ bản cực kỳ nhanh chóng. Hệ thống sẽ tự động phân loại Học sinh và Phụ huynh để áp dụng lộ trình tham quan riêng biệt.
                 </p>
             </div>
 
             <div class="glass-panel glass-card-hover" style="text-align: center; padding: 2.5rem 2rem;">
                 <div style="width: 60px; height: 60px; background: rgba(255, 170, 0, 0.1); color: var(--parent-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1.5rem auto; box-shadow: 0 0 15px rgba(255,170,0,0.15);">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <i class="fa-solid fa-envelope-open-text"></i>
                 </div>
-                <h3 style="margin-bottom: 1rem;">2. Sinh thẻ tự động</h3>
+                <h3 style="margin-bottom: 1rem;">2. Nhận Thư Mời</h3>
                 <p style="color: var(--text-muted); font-size: 0.95rem;">
-                    Nhận ngay thẻ Passport với 4 phong cách thiết kế thời thượng (Thẻ sự kiện, Vé bay, Vé xem phim, Thẻ VIP). Bạn có thể đổi mẫu thiết kế bất cứ lúc nào bằng 1 cú click!
+                    Nhận ngay Thư mời điện tử độc quyền được thiết kế sang trọng với tên của bạn. Thư mời được định dạng màu sắc chuẩn, phông chữ tinh tế và hài hòa.
                 </p>
             </div>
 
             <div class="glass-panel glass-card-hover" style="text-align: center; padding: 2.5rem 2rem;">
                 <div style="width: 60px; height: 60px; background: rgba(16, 185, 129, 0.1); color: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1.5rem auto; box-shadow: 0 0 15px rgba(16,185,129,0.15);">
-                    <i class="fa-solid fa-qrcode"></i>
+                    <i class="fa-solid fa-map-location-dot"></i>
                 </div>
-                <h3 style="margin-bottom: 1rem;">3. Lưu trữ và Quét mã</h3>
+                <h3 style="margin-bottom: 1rem;">3. Xem Lộ Trình & Tải Về</h3>
                 <p style="color: var(--text-muted); font-size: 0.95rem;">
-                    Tải Passport về máy dưới dạng hình ảnh PNG chất lượng cao, file PDF hoặc in trực tiếp. Sử dụng mã QR trên thẻ để check-in dễ dàng tại các gian hàng trong ngày hội.
+                    Xem lộ trình trải nghiệm chi tiết được thiết kế riêng. Tải Thư mời chất lượng cao (PNG, PDF) về thiết bị để lưu trữ hoặc in ấn dễ dàng.
                 </p>
             </div>
         </section>

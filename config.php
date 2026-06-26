@@ -4,10 +4,10 @@
  * Antigravity - Premium AI Developer
  */
 
-// Bật hiển thị lỗi để dễ dàng debug khi deploy (Có thể tắt đi khi chạy chính thức)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// Tắt hiển thị lỗi trực tiếp trên giao diện khi chạy chính thức (Production) để đảm bảo thẩm mỹ và bảo mật
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
 
 // Cấu hình Database (Tự động thích ứng môi trường Local Laragon và Railway)
 $db_host = getenv('MYSQLHOST') ?: 'localhost';
@@ -35,12 +35,15 @@ define('DB_PASS', $db_pass);
 define('DB_NAME', $db_name);
 define('DB_PORT', $db_port);
 
+// Giải quyết cảnh báo deprecation trên PHP 8.5+ (Sử dụng ATTR_INIT_COMMAND mới nếu có, ngược lại dùng mã số 1002)
+$mysql_init_command = defined('Pdo\Mysql::ATTR_INIT_COMMAND') ? Pdo\Mysql::ATTR_INIT_COMMAND : 1002;
+
 try {
     // 1. Tự động tạo database nếu đang ở môi trường local (Laragon/XAMPP)
     if (DB_HOST === 'localhost' || DB_HOST === '127.0.0.1') {
         $pdo_init = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT, DB_USER, DB_PASS, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
+            $mysql_init_command => "SET NAMES utf8mb4"
         ]);
         
         // Tạo cơ sở dữ liệu nếu chưa tồn tại
@@ -52,7 +55,7 @@ try {
     $pdo = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
+        $mysql_init_command => "SET NAMES utf8mb4"
     ]);
 
     // 3. Tự động tạo bảng `passports` nếu chưa tồn tại

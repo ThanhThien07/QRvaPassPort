@@ -26,8 +26,6 @@ if (!$passport) {
     // Tìm thấy Passport
     $fullname = $passport['fullname'];
     $role = $passport['role'];
-    $student_class = $passport['student_class'];
-    $student_name = $passport['student_name'];
     $phone = $passport['phone'];
     $avatar = $passport['avatar'];
     $created_at = date('d/m/Y H:i', strtotime($passport['created_at']));
@@ -163,12 +161,6 @@ if (!$passport) {
                                 <span>Đối tượng:</span>
                                 <strong class="text-slate-900 font-bold"><?php echo $role_label; ?></strong>
                             </li>
-                            <?php if ($role === 'parent'): ?>
-                                <li class="flex justify-between items-center py-3.5 text-sm text-slate-500">
-                                    <span>Họ tên con:</span>
-                                    <strong class="text-slate-900 font-bold"><?php echo htmlspecialchars($student_name); ?></strong>
-                                </li>
-                            <?php endif; ?>
                             <li class="flex justify-between items-center py-3.5 text-sm text-slate-500">
                                 <span>Số điện thoại:</span>
                                 <strong class="text-slate-900 font-bold"><?php echo htmlspecialchars($phone); ?></strong>

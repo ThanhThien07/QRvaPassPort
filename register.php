@@ -13,18 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $role = trim($_POST['role'] ?? 'student');
     $phone = trim($_POST['phone'] ?? '');
     $student_class = ''; // Lớp học đã được lược bỏ theo yêu cầu
-    $student_name = trim($_POST['student_name'] ?? '');
+    $student_name = ''; // Tên con đã được lược bỏ theo yêu cầu để tránh rườm rà
 
     // 1. Kiểm tra hợp lệ dữ liệu đầu vào
     if (empty($fullname)) $errors[] = 'Họ và tên không được để trống!';
     if (empty($phone)) $errors[] = 'Số điện thoại không được để trống!';
     if (!in_array($role, ['student', 'parent'])) $role = 'student';
-    
-    if ($role === 'student') {
-        $student_name = null; // Học sinh thì không cần tên con
-    } else {
-        if (empty($student_name)) $errors[] = 'Vui lòng nhập họ tên con của bạn!';
-    }
 
     // 2. Kiểm tra xem số điện thoại đã đăng ký chưa
     if (empty($errors)) {
@@ -180,13 +174,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="tel" name="phone" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3.5 px-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300" placeholder="Nhập số điện thoại để tra cứu lại sau..." required value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>">
                     </div>
 
-                    <!-- Trường thông tin thay đổi theo đối tượng -->
-                    <!-- Tên của con (Chỉ hiện khi là Phụ huynh) -->
-                    <div id="group-student-name" style="display: none;">
-                        <label class="block font-semibold text-slate-700 text-sm mb-2"><i class="fa-solid fa-child"></i> Họ và Tên Con (Học sinh)</label>
-                        <input type="text" name="student_name" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3.5 px-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300" placeholder="Nhập họ tên đầy đủ của con..." value="<?php echo htmlspecialchars($_POST['student_name'] ?? ''); ?>">
-                    </div>
-
                     <!-- Nút Submit -->
                     <button type="submit" class="w-full py-4 px-6 rounded-2xl font-bold text-base bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-sky-500/30 hover:brightness-105 active:translate-y-0 active:shadow-lg transition-all duration-300" id="btn-submit">
                         <i class="fa-solid fa-qrcode mr-1.5"></i> Tạo Passport Của Tôi
@@ -210,7 +197,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const formGlow = document.getElementById('form-glow');
             const formTitle = document.getElementById('form-title');
             const labelFullname = document.getElementById('label-fullname');
-            const groupStudentName = document.getElementById('group-student-name');
             const btnSubmit = document.getElementById('btn-submit');
 
             if (role === 'student') {
@@ -228,10 +214,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 formGlow.className = 'absolute -top-12 -right-12 w-36 h-36 rounded-full bg-sky-500/10 filter blur-2xl pointer-events-none transition-all duration-500';
                 formTitle.innerHTML = 'Đăng Ký <span class="bg-gradient-to-r from-sky-500 to-blue-600 bg-clip-text text-transparent">Passport Học Sinh</span>';
                 
-                // Thay đổi Label và ẩn/hiện trường thông tin
+                // Thay đổi Label
                 labelFullname.innerHTML = '<i class="fa-solid fa-user"></i> Họ và Tên Học Sinh';
-                groupStudentName.style.display = 'none';
-                groupStudentName.querySelector('input').removeAttribute('required');
                 
                 // Thay đổi nút submit
                 btnSubmit.className = 'w-full py-4 px-6 rounded-2xl font-bold text-base bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-sky-500/30 hover:brightness-105 active:translate-y-0 active:shadow-lg transition-all duration-300';
@@ -249,10 +233,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 formGlow.className = 'absolute -top-12 -right-12 w-36 h-36 rounded-full bg-amber-500/10 filter blur-2xl pointer-events-none transition-all duration-500';
                 formTitle.innerHTML = 'Đăng Ký <span class="bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">Passport Phụ Huynh</span>';
                 
-                // Thay đổi Label và ẩn/hiện trường thông tin
+                // Thay đổi Label
                 labelFullname.innerHTML = '<i class="fa-solid fa-user"></i> Họ và Tên Phụ Huynh';
-                groupStudentName.style.display = 'block';
-                groupStudentName.querySelector('input').setAttribute('required', 'required');
                 
                 // Thay đổi nút submit
                 btnSubmit.className = 'w-full py-4 px-6 rounded-2xl font-bold text-base bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-amber-500/30 hover:brightness-105 active:translate-y-0 active:shadow-lg transition-all duration-300';

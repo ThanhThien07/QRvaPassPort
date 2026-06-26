@@ -49,16 +49,12 @@ switch ($action) {
         $fullname = trim($_POST['fullname'] ?? '');
         $role = trim($_POST['role'] ?? 'student');
         $phone = trim($_POST['phone'] ?? '');
-        $student_class = trim($_POST['student_class'] ?? '');
-        $student_name = trim($_POST['student_name'] ?? '');
+        $student_class = ''; // Lược bỏ theo yêu cầu tối giản
+        $student_name = ''; // Lược bỏ theo yêu cầu tối giản
 
         if ($id <= 0 || empty($fullname) || empty($phone)) {
             echo json_encode(['success' => false, 'message' => 'Vui lòng điền đầy đủ các thông tin bắt buộc!']);
             exit;
-        }
-
-        if ($role === 'student') {
-            $student_name = null;
         }
 
         try {
@@ -128,16 +124,12 @@ switch ($action) {
         $fullname = trim($_POST['fullname'] ?? '');
         $role = trim($_POST['role'] ?? 'student');
         $phone = trim($_POST['phone'] ?? '');
-        $student_class = trim($_POST['student_class'] ?? '');
-        $student_name = trim($_POST['student_name'] ?? '');
+        $student_class = ''; // Lược bỏ theo yêu cầu tối giản
+        $student_name = ''; // Lược bỏ theo yêu cầu tối giản
 
         if (empty($fullname) || empty($phone)) {
             echo json_encode(['success' => false, 'message' => 'Vui lòng nhập họ tên và số điện thoại!']);
             exit;
-        }
-
-        if ($role === 'student') {
-            $student_name = null;
         }
 
         try {

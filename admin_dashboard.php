@@ -32,7 +32,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
     fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
     
     // Tiêu đề cột
-    fputcsv($output, ['STT', 'Mã Passport', 'Họ và Tên', 'Vai trò', 'Lớp học', 'Họ tên con (nếu có)', 'Số điện thoại', 'Ngày đăng ký']);
+    fputcsv($output, ['STT', 'Mã Passport', 'Họ và Tên', 'Vai trò', 'Số điện thoại', 'Ngày đăng ký']);
     
     $stmt = $pdo->query("SELECT * FROM `passports` ORDER BY `id` DESC");
     $index = 1;
@@ -42,8 +42,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
             $row['passport_code'],
             $row['fullname'],
             $row['role'] === 'student' ? 'Học sinh' : 'Phụ huynh',
-            $row['student_class'],
-            $row['student_name'] ?? '',
             $row['phone'],
             $row['created_at']
         ]);
@@ -88,7 +86,6 @@ if (empty($trend_labels)) {
 // 6. XỬ LÝ TÌM KIẾM, LỌC DANH SÁCH
 $search = trim($_GET['search'] ?? '');
 $filter_role = trim($_GET['role'] ?? '');
-$filter_class = trim($_GET['class'] ?? '');
 
 $where_clauses = [];
 $params = [];
@@ -105,18 +102,10 @@ if (!empty($filter_role)) {
     $params[] = $filter_role;
 }
 
-if (!empty($filter_class)) {
-    $where_clauses[] = "`student_class` = ?";
-    $params[] = $filter_class;
-}
-
 $where_sql = '';
 if (!empty($where_clauses)) {
     $where_sql = 'WHERE ' . implode(' AND ', $where_clauses);
 }
-
-// Lấy danh sách lớp học để làm bộ lọc dropdown
-$classes_list = $pdo->query("SELECT DISTINCT `student_class` FROM `passports` ORDER BY `student_class` ASC")->fetchAll(PDO::FETCH_COLUMN);
 
 // Truy vấn danh sách thành viên sau khi lọc
 $query_sql = "SELECT * FROM `passports` $where_sql ORDER BY `id` DESC";
@@ -277,21 +266,11 @@ $passports_list = $stmt->fetchAll();
                     <option value="parent" <?php echo $filter_role === 'parent' ? 'selected' : ''; ?>>Phụ huynh</option>
                 </select>
 
-                <!-- Lọc theo lớp -->
-                <select name="class" class="min-w-[130px] bg-slate-50 border border-slate-200/80 rounded-xl py-2.5 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:bg-white transition-all duration-300 text-sm">
-                    <option value="">-- Chọn lớp --</option>
-                    <?php foreach ($classes_list as $cls): ?>
-                        <option value="<?php echo htmlspecialchars($cls); ?>" <?php echo $filter_class === $cls ? 'selected' : ''; ?>>
-                            Lớp <?php echo htmlspecialchars($cls); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-
                 <!-- Nút áp dụng bộ lọc -->
                 <button type="submit" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200/80 transition-all"><i class="fa-solid fa-filter"></i> Lọc</button>
                 
                 <!-- Nút Reset bộ lọc -->
-                <?php if (!empty($search) || !empty($filter_role) || !empty($filter_class)): ?>
+                <?php if (!empty($search) || !empty($filter_role)): ?>
                     <a href="admin_dashboard.php" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-slate-50 border border-slate-200/80 text-slate-600 hover:bg-slate-100 transition-all"><i class="fa-solid fa-rotate-left"></i> Reset</a>
                 <?php endif; ?>
             </form>
@@ -305,8 +284,6 @@ $passports_list = $stmt->fetchAll();
                             <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase">Mã Passport</th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase">Họ và Tên</th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase">Đối Tượng</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase">Lớp</th>
-                            <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase">Thông Tin Con (PH)</th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase">Số Điện Thoại</th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase">Ngày Đăng Ký</th>
                             <th class="px-6 py-4 text-xs font-bold text-slate-400 tracking-wider uppercase text-center">Thao Tác</th>
@@ -315,7 +292,7 @@ $passports_list = $stmt->fetchAll();
                     <tbody class="divide-y divide-slate-100 bg-white/50" id="table-body">
                         <?php if (empty($passports_list)): ?>
                             <tr>
-                                <td colspan="9" class="text-center text-slate-400 py-12">
+                                <td colspan="7" class="text-center text-slate-400 py-12">
                                     <i class="fa-solid fa-folder-open text-4xl mb-3 block"></i>
                                     Không tìm thấy dữ liệu đăng ký nào phù hợp với bộ lọc!
                                 </td>
@@ -338,12 +315,6 @@ $passports_list = $stmt->fetchAll();
                                         <?php else: ?>
                                             <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 border border-amber-100 text-amber-600">Phụ huynh</span>
                                         <?php endif; ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-slate-700 font-semibold">
-                                        <?php echo !empty($row['student_class']) ? 'Lớp ' . htmlspecialchars($row['student_class']) : '-'; ?>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-slate-500 font-medium">
-                                        <?php echo $row['role'] === 'parent' ? htmlspecialchars($row['student_name']) : '-'; ?>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-slate-700 font-semibold"><?php echo htmlspecialchars($row['phone']); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-slate-400 text-xs">
@@ -396,22 +367,10 @@ $passports_list = $stmt->fetchAll();
                 <!-- Vai trò -->
                 <div>
                     <label class="block font-semibold text-slate-700 text-sm mb-2">Đối Tượng</label>
-                    <select name="role" id="edit-role" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:bg-white transition-all duration-300 text-sm" onchange="toggleEditModalFields(this.value)" required>
+                    <select name="role" id="edit-role" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:bg-white transition-all duration-300 text-sm" required>
                         <option value="student">Học sinh</option>
                         <option value="parent">Phụ huynh</option>
                     </select>
-                </div>
-
-                <!-- Lớp học (Ẩn/Hiện bằng JS nhưng vẫn gửi lên nếu cần, tuy nhiên đã lược bỏ lớp lúc đăng ký, ta có thể để trống hoặc cho sửa lớp) -->
-                <div>
-                    <label class="block font-semibold text-slate-700 text-sm mb-2" id="edit-label-class">Lớp Học</label>
-                    <input type="text" name="student_class" id="edit-class" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300 text-sm">
-                </div>
-
-                <!-- Tên con (Chỉ hiện khi là Phụ huynh) -->
-                <div id="edit-group-student-name" style="display: none;">
-                    <label class="block font-semibold text-slate-700 text-sm mb-2">Họ và Tên Con</label>
-                    <input type="text" name="student_name" id="edit-student-name" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300 text-sm">
                 </div>
 
                 <!-- Số điện thoại -->
@@ -448,22 +407,10 @@ $passports_list = $stmt->fetchAll();
                 <!-- Vai trò -->
                 <div>
                     <label class="block font-semibold text-slate-700 text-sm mb-2">Đối Tượng</label>
-                    <select name="role" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:bg-white transition-all duration-300 text-sm" onchange="toggleAddModalFields(this.value)" required>
+                    <select name="role" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:bg-white transition-all duration-300 text-sm" required>
                         <option value="student" selected>Học sinh</option>
                         <option value="parent">Phụ huynh</option>
                     </select>
-                </div>
-
-                <!-- Lớp học -->
-                <div>
-                    <label class="block font-semibold text-slate-700 text-sm mb-2" id="add-label-class">Lớp Học</label>
-                    <input type="text" name="student_class" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300 text-sm" placeholder="Ví dụ: 11A2...">
-                </div>
-
-                <!-- Tên con (Chỉ hiện khi là Phụ huynh) -->
-                <div id="add-group-student-name" style="display: none;">
-                    <label class="block font-semibold text-slate-700 text-sm mb-2">Họ và Tên Con</label>
-                    <input type="text" name="student_name" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3 px-4 text-slate-900 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300 text-sm" placeholder="Nhập họ tên của con...">
                 </div>
 
                 <!-- Số điện thoại -->
@@ -573,18 +520,6 @@ $passports_list = $stmt->fetchAll();
         // II. ĐIỀU KHIỂN MODALS & THAO TÁC CRUD
         
         // --- 1. MODAL CHỈNH SỬA (EDIT) ---
-        function toggleEditModalFields(role) {
-            const groupStudentName = document.getElementById('edit-group-student-name');
-            const labelClass = document.getElementById('edit-label-class');
-            if (role === 'student') {
-                groupStudentName.style.display = 'none';
-                labelClass.textContent = 'Lớp Học';
-            } else {
-                groupStudentName.style.display = 'block';
-                labelClass.textContent = 'Lớp Học Của Con';
-            }
-        }
-
         function openEditModal(id) {
             // Gọi AJAX lấy thông tin chi tiết
             fetch('ajax_handler.php?action=get&id=' + id)
@@ -595,13 +530,8 @@ $passports_list = $stmt->fetchAll();
                         document.getElementById('edit-id').value = data.id;
                         document.getElementById('edit-fullname').value = data.fullname;
                         document.getElementById('edit-role').value = data.role;
-                        document.getElementById('edit-class').value = data.student_class || '';
-                        document.getElementById('edit-student-name').value = data.student_name || '';
                         document.getElementById('edit-phone').value = data.phone;
                         document.getElementById('edit-passport-code').textContent = data.passport_code;
-                        
-                        // Chỉnh sửa hiển thị các trường tùy theo vai trò
-                        toggleEditModalFields(data.role);
                         
                         // Hiển thị modal
                         document.getElementById('editModal').classList.add('show');
@@ -645,21 +575,8 @@ $passports_list = $stmt->fetchAll();
         }
 
         // --- 2. MODAL THÊM MỚI (ADD) ---
-        function toggleAddModalFields(role) {
-            const groupStudentName = document.getElementById('add-group-student-name');
-            const labelClass = document.getElementById('add-label-class');
-            if (role === 'student') {
-                groupStudentName.style.display = 'none';
-                labelClass.textContent = 'Lớp Học';
-            } else {
-                groupStudentName.style.display = 'block';
-                labelClass.textContent = 'Lớp Học Của Con';
-            }
-        }
-
         function openAddModal() {
             document.getElementById('addForm').reset();
-            toggleAddModalFields('student');
             document.getElementById('addModal').classList.add('show');
         }
 

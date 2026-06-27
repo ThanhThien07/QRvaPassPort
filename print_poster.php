@@ -61,24 +61,34 @@ $register_url = getBaseUrl() . 'register.php';
             margin-bottom: 2rem;
         }
 
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
         /* Ẩn thanh điều khiển và tối ưu khổ giấy khi in thực tế */
         @media print {
             body {
                 background: #ffffff !important;
                 padding: 0 !important;
                 margin: 0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
             .poster-preview-wrapper {
                 box-shadow: none !important;
                 border-radius: 0 !important;
                 margin: 0 !important;
+                width: 210mm !important;
+                height: 297mm !important;
             }
             .poster-container {
-                border: 10px double #000000 !important;
-                width: 100% !important;
-                height: 100vh !important;
-                page-break-after: avoid;
-                page-break-before: avoid;
+                width: 210mm !important;
+                height: 297mm !important;
+                border: 15px double #1e293b !important;
+                box-sizing: border-box !important;
+                margin: 0 !important;
+                padding: 20mm !important;
+                page-break-inside: avoid;
             }
         }
     </style>

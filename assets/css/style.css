@@ -15,7 +15,9 @@
     --parent-gradient: linear-gradient(135deg, #d97706 0%, #c2410c 100%);
 }
 
-body {
+html, body {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     font-family: var(--font-sans);
     background-color: #ffffff;
     min-height: 100vh;

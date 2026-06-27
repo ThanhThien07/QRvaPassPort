@@ -194,6 +194,22 @@ if (!$passport) {
     <?php if (!isset($error_msg)): ?>
     <!-- Script xử lý logic tại trang Passport -->
     <script>
+        // TỰ ĐỘNG ĐIỀU CHỈNH CỠ CHỮ TRÊN TRÌNH DUYỆT (Để tránh lỗi Container Queries/Font Boosting trên Safari/iOS)
+        function adjustNameFontSize() {
+            const invitationCard = document.getElementById('theme-thumoi');
+            const nameOverlay = document.getElementById('overlay-tm-name');
+            if (invitationCard && nameOverlay) {
+                const actualWidth = invitationCard.offsetWidth;
+                const targetFontSize = actualWidth * 0.022;
+                nameOverlay.style.fontSize = targetFontSize + 'px';
+            }
+        }
+
+        // Kích hoạt tự động điều chỉnh cỡ chữ khi tải trang và thay đổi kích thước màn hình
+        document.addEventListener('DOMContentLoaded', adjustNameFontSize);
+        window.addEventListener('load', adjustNameFontSize);
+        window.addEventListener('resize', adjustNameFontSize);
+
         // TẢI ẢNH PNG (Chỉ tải ảnh Thư Mời theo yêu cầu)
         function downloadPNG() {
             const invitationCard = document.getElementById('theme-thumoi');
@@ -208,25 +224,11 @@ if (!$passport) {
                 backgroundColor: null,
                 logging: false,
                 onclone: (clonedDoc) => {
-                    // Lấy chiều rộng thực tế của thẻ trong trình duyệt hiện tại
                     const actualWidth = invitationCard.offsetWidth;
-                    
-                    // Tìm phần tử tên trong bản clone
                     const clonedName = clonedDoc.getElementById('overlay-tm-name');
                     if (clonedName) {
-                        // Tính toán cỡ chữ bằng px chuẩn xác theo tỷ lệ 2.2% của chiều rộng thực tế
-                        // (Ví dụ: nếu rộng 500px thì chữ là 11px, nếu rộng 330px thì chữ là 7.26px)
                         const targetFontSize = actualWidth * 0.022;
                         clonedName.style.fontSize = targetFontSize + 'px';
-                        
-                        // Đảm bảo các thuộc tính căn chỉnh hoạt động hoàn hảo trên bản clone
-                        clonedName.style.display = 'block';
-                        clonedName.style.transform = 'none';
-                        clonedName.style.left = '0';
-                        clonedName.style.right = '0';
-                        clonedName.style.textAlign = 'center';
-                        clonedName.style.top = 'auto'; // Reset top
-                        clonedName.style.bottom = '50.8%'; // Sử dụng bottom đồng bộ với CSS để khớp trên dòng kẻ
                     }
                 }
             }).then(canvas => {

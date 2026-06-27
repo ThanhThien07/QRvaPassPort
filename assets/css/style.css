@@ -67,7 +67,7 @@ html, body {
 
 .overlay-name-thumoi {
     top: auto;
-    bottom: 50.8%; /* Sử dụng bottom thay vì top để đáy của chữ luôn tựa ngay ngắn TRÊN dòng dấu chấm, bất kể cỡ chữ hay độ phân giải */
+    bottom: 46.4%; /* Sử dụng bottom thay vì top để đáy của chữ luôn tựa ngay ngắn TRÊN dòng dấu chấm */
     left: 0;
     right: 0;
     display: block; /* Ghi đè display: flex của .overlay-element để tránh lỗi dựng hình */

@@ -225,7 +225,8 @@ if (!$passport) {
                         clonedName.style.left = '0';
                         clonedName.style.right = '0';
                         clonedName.style.textAlign = 'center';
-                        clonedName.style.top = '48.0%'; // Sử dụng vị trí top đồng bộ với CSS để khớp trên dòng kẻ
+                        clonedName.style.top = 'auto'; // Reset top
+                        clonedName.style.bottom = '50.8%'; // Sử dụng bottom đồng bộ với CSS để khớp trên dòng kẻ
                     }
                 }
             }).then(canvas => {

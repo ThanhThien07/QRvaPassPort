@@ -189,7 +189,6 @@ if (!$passport) {
     <!-- Tải các thư viện JS Offline đã tải về -->
     <script src="assets/js/qrcode.min.js"></script>
     <script src="assets/js/html2canvas.min.js"></script>
-    <script src="assets/js/jspdf.umd.min.js"></script>
 
     <?php if (!isset($error_msg)): ?>
     <!-- Script xử lý logic tại trang Passport -->

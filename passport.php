@@ -73,7 +73,7 @@ if (!$passport) {
         }
     </script>
     <!-- CSS chính (Tối giản chỉ giữ card & animation) -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css?v=1.0.4">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -199,8 +199,18 @@ if (!$passport) {
             const nameOverlay = document.getElementById('overlay-tm-name');
             if (invitationCard && nameOverlay) {
                 const actualWidth = invitationCard.offsetWidth;
-                const targetFontSize = actualWidth * 0.022;
+                
+                // Cỡ chữ lý tưởng ban đầu dựa trên chiều rộng thẻ
+                let targetFontSize = actualWidth * 0.022;
                 nameOverlay.style.fontSize = targetFontSize + 'px';
+                
+                // Thu nhỏ dần cỡ chữ nếu tên quá dài làm tràn khung chứa (không bao giờ vượt quá vùng cho phép)
+                let maxIterations = 30;
+                while (nameOverlay.scrollWidth > nameOverlay.offsetWidth && targetFontSize > 6 && maxIterations > 0) {
+                    targetFontSize -= 0.3;
+                    nameOverlay.style.fontSize = targetFontSize + 'px';
+                    maxIterations--;
+                }
             }
         }
 
@@ -223,11 +233,9 @@ if (!$passport) {
                 backgroundColor: null,
                 logging: false,
                 onclone: (clonedDoc) => {
-                    const actualWidth = invitationCard.offsetWidth;
                     const clonedName = clonedDoc.getElementById('overlay-tm-name');
                     if (clonedName) {
-                        const targetFontSize = actualWidth * 0.022;
-                        clonedName.style.fontSize = targetFontSize + 'px';
+                        clonedName.style.fontSize = nameOverlay.style.fontSize;
                     }
                 }
             }).then(canvas => {

@@ -146,7 +146,7 @@ $passports_list = $stmt->fetchAll();
         }
     </script>
     <!-- CSS chính (Tối giản chỉ giữ card & animation) -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css?v=1.0.4">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>

@@ -68,11 +68,11 @@ html, body {
 .overlay-name-thumoi {
     top: auto;
     bottom: 48.2%; /* Căn chỉnh hoàn hảo trên dòng dấu chấm bằng phương pháp nội suy tuyến tính */
-    left: 0;
-    right: 0;
+    left: 35.8%;
+    right: 18%;
     display: block; /* Ghi đè display: flex của .overlay-element để tránh lỗi dựng hình */
     transform: none; /* Tránh lỗi lệch vị trí của html2canvas */
-    text-align: center;
+    text-align: left;
     font-size: 11px; /* Cỡ chữ mặc định làm fallback */
     font-size: 2.2cqw; /* Cỡ chữ nhỏ nhắn, tinh tế và tương xứng với chữ "Kính mời" */
     color: #5c1d0c; /* Màu đỏ nâu giống chữ Kính Gửi gốc */

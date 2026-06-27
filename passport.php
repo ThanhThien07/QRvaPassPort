@@ -206,7 +206,22 @@ if (!$passport) {
                 scale: 3, // Xuất độ nét siêu cao để in ấn không bị vỡ chữ
                 useCORS: true,
                 backgroundColor: null,
-                logging: false
+                logging: false,
+                onclone: (clonedDoc) => {
+                    const clonedCard = clonedDoc.getElementById('theme-thumoi');
+                    if (clonedCard) {
+                        // Thiết lập kích thước cố định cho ảnh tải về để luôn đạt độ phân giải cao và đồng nhất trên mọi thiết bị
+                        clonedCard.style.width = '1000px';
+                        clonedCard.style.maxWidth = 'none';
+                        clonedCard.style.borderRadius = '48px'; // Đồng bộ tỉ lệ góc bo tròn (24px * 2)
+                        clonedCard.style.borderWidth = '6px'; // Đồng bộ tỉ lệ viền trang trí (3px * 2)
+                        
+                        const clonedName = clonedDoc.getElementById('overlay-tm-name');
+                        if (clonedName) {
+                            clonedName.style.fontSize = '22px'; // Cố định cỡ chữ 22px tương ứng với khung 1000px (2.2% của 1000px)
+                        }
+                    }
+                }
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'ThuMoi_' + '<?php echo $passport["passport_code"]; ?>' + '.png';

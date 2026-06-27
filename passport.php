@@ -208,18 +208,24 @@ if (!$passport) {
                 backgroundColor: null,
                 logging: false,
                 onclone: (clonedDoc) => {
-                    const clonedCard = clonedDoc.getElementById('theme-thumoi');
-                    if (clonedCard) {
-                        // Thiết lập kích thước cố định cho ảnh tải về để luôn đạt độ phân giải cao và đồng nhất trên mọi thiết bị
-                        clonedCard.style.width = '1000px';
-                        clonedCard.style.maxWidth = 'none';
-                        clonedCard.style.borderRadius = '48px'; // Đồng bộ tỉ lệ góc bo tròn (24px * 2)
-                        clonedCard.style.borderWidth = '6px'; // Đồng bộ tỉ lệ viền trang trí (3px * 2)
+                    // Lấy chiều rộng thực tế của thẻ trong trình duyệt hiện tại
+                    const actualWidth = invitationCard.offsetWidth;
+                    
+                    // Tìm phần tử tên trong bản clone
+                    const clonedName = clonedDoc.getElementById('overlay-tm-name');
+                    if (clonedName) {
+                        // Tính toán cỡ chữ bằng px chuẩn xác theo tỷ lệ 2.2% của chiều rộng thực tế
+                        // (Ví dụ: nếu rộng 500px thì chữ là 11px, nếu rộng 330px thì chữ là 7.26px)
+                        const targetFontSize = actualWidth * 0.022;
+                        clonedName.style.fontSize = targetFontSize + 'px';
                         
-                        const clonedName = clonedDoc.getElementById('overlay-tm-name');
-                        if (clonedName) {
-                            clonedName.style.fontSize = '22px'; // Cố định cỡ chữ 22px tương ứng với khung 1000px (2.2% của 1000px)
-                        }
+                        // Đảm bảo các thuộc tính căn chỉnh hoạt động hoàn hảo trên bản clone
+                        clonedName.style.display = 'block';
+                        clonedName.style.transform = 'none';
+                        clonedName.style.left = '0';
+                        clonedName.style.right = '0';
+                        clonedName.style.textAlign = 'center';
+                        clonedName.style.top = '48.0%'; // Sử dụng vị trí top đồng bộ với CSS để khớp trên dòng kẻ
                     }
                 }
             }).then(canvas => {

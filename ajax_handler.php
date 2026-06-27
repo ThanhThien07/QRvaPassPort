@@ -77,6 +77,9 @@ switch ($action) {
             ");
             $stmt->execute([$fullname, $role, $student_name, $student_class, $phone, $id]);
 
+            // Đồng bộ ra file database.csv
+            syncDatabaseToCsv($pdo);
+
             echo json_encode(['success' => true, 'message' => 'Cập nhật thông tin thành công!']);
         } catch (PDOException $e) {
             echo json_encode(['success' => false, 'message' => 'Lỗi database: ' . $e->getMessage()]);
@@ -105,6 +108,9 @@ switch ($action) {
             // Thực hiện xóa bản ghi
             $stmt = $pdo->prepare("DELETE FROM `passports` WHERE `id` = ?");
             $stmt->execute([$id]);
+
+            // Đồng bộ ra file database.csv
+            syncDatabaseToCsv($pdo);
 
             // Nếu xóa thành công và file avatar không phải mặc định, thực hiện xóa file trên ổ đĩa
             if ($avatar && $avatar !== 'uploads/default.png' && file_exists($avatar)) {
@@ -165,6 +171,9 @@ switch ($action) {
                 $phone,
                 $avatar_path
             ]);
+
+            // Đồng bộ ra file database.csv
+            syncDatabaseToCsv($pdo);
 
             echo json_encode(['success' => true, 'message' => 'Thêm mới thành viên thành công!', 'code' => $passport_code]);
         } catch (PDOException $e) {

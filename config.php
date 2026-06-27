@@ -80,6 +80,11 @@ try {
     ";
     $pdo->exec($sql_create_table);
 
+    // Tự động đồng bộ ra file database.csv tại thư mục gốc nếu chưa tồn tại
+    if (!file_exists(__DIR__ . '/database.csv')) {
+        syncDatabaseToCsv($pdo);
+    }
+
 } catch (PDOException $e) {
     die("Lỗi kết nối cơ sở dữ liệu: " . $e->getMessage());
 }
@@ -126,5 +131,40 @@ function generatePassportCode($pdo, $role) {
         }
     }
     return $code;
+}
+
+/**
+ * Tự động đồng bộ toàn bộ bảng passports ra file database.csv tại thư mục gốc
+ */
+function syncDatabaseToCsv($pdo) {
+    $csv_file = __DIR__ . '/database.csv';
+    try {
+        $stmt = $pdo->query("SELECT `passport_code`, `fullname`, `role`, `phone`, `created_at` FROM `passports` ORDER BY `id` ASC");
+        $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $fp = fopen($csv_file, 'w');
+        if ($fp) {
+            // Ghi UTF-8 BOM để Excel hiển thị tiếng Việt chuẩn không bị lỗi font
+            fprintf($fp, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            // Tiêu đề các cột
+            fputcsv($fp, ['STT', 'Mã Passport', 'Họ và Tên', 'Vai trò', 'Số điện thoại', 'Ngày đăng ký']);
+            
+            $index = 1;
+            foreach ($records as $row) {
+                fputcsv($fp, [
+                    $index++,
+                    $row['passport_code'],
+                    $row['fullname'],
+                    $row['role'] === 'student' ? 'Học sinh' : 'Phụ huynh',
+                    $row['phone'],
+                    $row['created_at']
+                ]);
+            }
+            fclose($fp);
+        }
+    } catch (Exception $e) {
+        // Bỏ qua lỗi ghi file
+    }
 }
 ?>

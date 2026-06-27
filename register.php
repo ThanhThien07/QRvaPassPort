@@ -57,6 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $avatar_path
             ]);
             
+            // Đồng bộ ra file database.csv
+            syncDatabaseToCsv($pdo);
+            
             // Đăng ký thành công, chuyển hướng đến trang hiển thị Passport cá nhân
             header("Location: passport.php?code=" . $passport_code . "&new=1");
             exit;

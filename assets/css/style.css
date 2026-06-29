@@ -79,14 +79,14 @@ html, body {
      */
     position: absolute;
     top: 50.5%;                /* Đúng vị trí dòng dấu ba chấm (đường kẻ đỏ) */
-    left: 28%;                 /* Sát ngay sau dấu ":" của "Kính mời :" */
-    width: 60%;                /* Khung rộng để chứa tên dài */
+    left: 25.96%;             /* Toàn bộ vùng dấu chấm (từ sau dấu ":") */
+    width: 61.22%;            /* Chiều rộng đến cuối dòng chấm */
     height: 3.6cqw;            /* Chiều cao khung tương ứng tỉ lệ */
     transform: translateY(-100%); /* Chân chữ nằm SÁT TRÊN dấu ba chấm */
     display: flex;
     align-items: flex-end;    /* Căn chân chữ xuống đáy khung */
-    justify-content: flex-start; /* Căn trái để sát phía bên "Kính mời :" */
-    text-align: left;
+    justify-content: center;  /* Căn giữa theo chiều ngang */
+    text-align: center;
     overflow: hidden;
     white-space: nowrap;
     font-size: 2.8cqw;         /* Co giãn tự động: 2.8% chiều rộng card */

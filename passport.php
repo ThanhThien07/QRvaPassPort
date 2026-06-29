@@ -233,7 +233,13 @@ if (!$passport) {
             const templateImg = invitationCard.querySelector('.ticket-template-img');
 
             async function doRender() {
-                const currentFontSize = nameOverlay.style.fontSize;
+                const containerWidth = invitationCard.offsetWidth;
+                const containerHeight = invitationCard.offsetHeight;
+
+                // Tính toán toạ độ px chính xác theo tỉ lệ thực tế của card trên màn hình
+                const pixelLeft = Math.round(containerWidth * 0.2596);
+                const pixelWidth = Math.round(containerWidth * 0.6122);
+                const pixelTop = Math.round(containerHeight * 0.505);
 
                 html2canvas(invitationCard, {
                     scale: 3,
@@ -248,13 +254,13 @@ if (!$passport) {
                             clonedName.style.fontSize = nameOverlay.style.fontSize;
                             clonedName.style.height = nameOverlay.style.height;
                             clonedName.style.position = 'absolute';
-                            clonedName.style.top = '50.5%';
-                            clonedName.style.left = '28%';
-                            clonedName.style.width = '60%';
+                            clonedName.style.top = pixelTop + 'px';
+                            clonedName.style.left = pixelLeft + 'px';
+                            clonedName.style.width = pixelWidth + 'px';
                             clonedName.style.display = 'flex';
                             clonedName.style.alignItems = 'flex-end';
-                            clonedName.style.justifyContent = 'flex-start';
-                            clonedName.style.textAlign = 'left';
+                            clonedName.style.justifyContent = 'center';
+                            clonedName.style.textAlign = 'center';
                             clonedName.style.transform = 'translateY(-100%)';
                             clonedName.style.color = '#5c1d0c';
                             clonedName.style.fontFamily = "'Times New Roman', Times, serif";

@@ -125,8 +125,8 @@ if (!$passport) {
                             <!-- Ảnh mẫu gốc từ thư mục anh -->
                             <img class="ticket-template-img" src="anh/final-thumoi.png" alt="Vé Thư Mời" crossorigin="anonymous" onerror="this.removeAttribute('crossorigin'); this.src='uploads/default.png';">
                             
-                            <!-- Họ tên đè lên (Overlay) - Căn trái sát Kính mời, chân chữ sát trên dòng dấu ba chấm -->
-                            <div class="overlay-name-thumoi" id="overlay-tm-name">
+                            <!-- Họ tên đè lên (Overlay) - Căn giữa trong phạm vi kẻ chấm bằng Tailwind CSS -->
+                            <div class="absolute top-[45%] left-[26%] w-[61%] text-center leading-none whitespace-nowrap overflow-hidden text-[#5c1d0c] font-serif italic font-bold pointer-events-none z-10" id="overlay-tm-name">
                                 <?php echo htmlspecialchars($fullname); ?>
                             </div>
                         </div>
@@ -191,23 +191,20 @@ if (!$passport) {
 
     <!-- Tải các thư viện JS Offline đã tải về -->
     <script src="assets/js/qrcode.min.js"></script>
-    <script src="assets/js/html2canvas.min.js"></script>
+    <script src="assets/js/dom-to-image-more.min.js"></script>
 
     <?php if (!isset($error_msg)): ?>
     <!-- Script xử lý logic tại trang Passport -->
     <script>
-        // Tự động điều chỉnh cỡ chữ theo kích thước card hiển thị (Cả Laptop & Mobile)
+        // Tự động điều chỉnh cỡ chữ theo kích thước card (Laptop & Mobile)
         function adjustNameFontSize() {
             const container = document.getElementById('theme-thumoi');
             const nameOverlay = document.getElementById('overlay-tm-name');
             if (container && nameOverlay) {
                 const containerWidth = container.offsetWidth;
                 if (containerWidth > 0) {
-                    // Hệ số 0.04 (4% chiều rộng ảnh) - to, rõ ràng, tự co giãn theo màn hình
-                    const calculatedFontSize = Math.round(containerWidth * 0.04);
-                    nameOverlay.style.fontSize = calculatedFontSize + 'px';
-                    // Đặt chiều cao bằng cỡ chữ + padding để không bị cắt ngọn
-                    nameOverlay.style.height = Math.round(containerWidth * 0.05) + 'px';
+                    // 4% chiều rộng card → tự co giãn trên mọi thiết bị
+                    nameOverlay.style.fontSize = Math.round(containerWidth * 0.04) + 'px';
                 }
             }
         }
@@ -216,7 +213,7 @@ if (!$passport) {
         window.addEventListener('load', adjustNameFontSize);
         window.addEventListener('resize', adjustNameFontSize);
 
-        // TẢI ẢNH PNG
+        // TẢI ẢNH PNG dùng dom-to-image-more (hỗ trợ CSS tốt hơn html2canvas)
         async function downloadPNG() {
             const invitationCard = document.getElementById('theme-thumoi');
             const btn = document.getElementById('btn-download-png');
@@ -224,56 +221,66 @@ if (!$passport) {
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang xuất ảnh...';
             btn.disabled = true;
 
-            // Chờ font chữ được tải xong hoàn toàn
+            // Chờ tất cả font chữ load xong
             if (document.fonts && document.fonts.ready) {
                 await document.fonts.ready;
             }
 
-            const templateImg = invitationCard.querySelector('.ticket-template-img');
+            // Delay nhỏ để layout ổn định (quan trọng trên mobile)
+            await new Promise(r => setTimeout(r, 500));
 
-            async function doRender() {
-                html2canvas(invitationCard, {
-                    scale: 3,
-                    useCORS: true,
-                    allowTaint: true,
-                    backgroundColor: null,
-                    logging: false,
-                    imageTimeout: 15000,
-                    onclone: (clonedDoc) => {
-                        const clonedName = clonedDoc.getElementById('overlay-tm-name');
-                        const originalName = document.getElementById('overlay-tm-name');
-                        if (clonedName && originalName) {
-                            clonedName.style.fontSize = originalName.style.fontSize;
-                            clonedName.style.height = originalName.style.height;
-                            // Ép buộc căn trái trên bản xuất ảnh để html2canvas không tự reset
-                            clonedName.style.justifyContent = 'flex-start';
-                            clonedName.style.textAlign = 'left';
-                        }
-                    }
-                }).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = 'ThuMoi_<?php echo htmlspecialchars($passport["passport_code"] ?? time()); ?>.png';
-                    link.href = canvas.toDataURL('image/png', 1.0);
-                    link.click();
+            // Tạm thời remove các link stylesheet ngoài để tránh SecurityError từ dom-to-image
+            const corsLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).filter(link => {
+                const href = link.getAttribute('href');
+                return href && (href.startsWith('http://') || href.startsWith('https://')) && !href.includes(window.location.host);
+            });
 
-                    btn.innerHTML = originalHTML;
-                    btn.disabled = false;
-                }).catch(err => {
-                    alert('Có lỗi xảy ra khi xuất ảnh! Vui lòng thử lại.');
-                    btn.innerHTML = originalHTML;
-                    btn.disabled = false;
-                    console.error(err);
+            const savedLinks = corsLinks.map(link => ({
+                parent: link.parentNode,
+                nextSibling: link.nextSibling,
+                link: link
+            }));
+
+            corsLinks.forEach(link => link.remove());
+
+            const scale = 3; // Xuất ảnh nét gấp 3x
+            const width  = invitationCard.offsetWidth;
+            const height = invitationCard.offsetHeight;
+
+            domtoimage.toPng(invitationCard, {
+                quality: 1,
+                width:  width  * scale,
+                height: height * scale,
+                style: {
+                    transform: 'scale(' + scale + ')',
+                    transformOrigin: 'top left',
+                    width:  width  + 'px',
+                    height: height + 'px'
+                }
+            }).then(dataUrl => {
+                const link = document.createElement('a');
+                link.download = 'ThuMoi_<?php echo htmlspecialchars($passport["passport_code"] ?? time()); ?>.png';
+                link.href = dataUrl;
+                link.click();
+                
+                // Khôi phục lại các stylesheets
+                savedLinks.forEach(item => {
+                    item.parent.insertBefore(item.link, item.nextSibling);
                 });
-            }
 
-            // Nếu ảnh template chưa load xong, chờ load xong rồi mới render
-            // Thêm delay 500ms để CPU điện thoại kịp xử lý layout trước khi chụp
-            if (templateImg && !templateImg.complete) {
-                templateImg.onload = () => setTimeout(doRender, 500);
-                templateImg.onerror = () => setTimeout(doRender, 500);
-            } else {
-                setTimeout(doRender, 500);
-            }
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }).catch(err => {
+                // Khôi phục lại các stylesheets nếu lỗi
+                savedLinks.forEach(item => {
+                    item.parent.insertBefore(item.link, item.nextSibling);
+                });
+
+                alert('Có lỗi xảy ra khi xuất ảnh! Vui lòng thử lại.');
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+                console.error(err);
+            });
         }
     </script>
     <?php endif; ?>

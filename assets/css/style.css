@@ -65,25 +65,7 @@ html, body {
     text-align: center;
 }
 
-.overlay-name-thumoi {
-    position: absolute;
-    top: 53%;            /* Hạ xuống để chân chữ bám đúng dòng kẻ chấm sau khi translate(-100%) */
-    left: 26.5%;         /* Bắt đầu ngay sau dấu ':' của Kính mời */
-    width: 60%;          /* Giới hạn độ rộng để chữ không tràn ra ngoài */
-    transform: translateY(-100%); /* Kéo chữ lên để chân chữ bám sát đường chấm */
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-start; /* Căn trái để chữ bám sát vào chữ Kính mời */
-    text-align: left;
-    white-space: nowrap;
-    overflow: hidden;    /* Ẩn bớt nếu tên quá dài */
-    color: #5c1d0c;
-    font-family: 'Times New Roman', Times, serif;
-    font-style: italic;
-    font-weight: bold;
-    pointer-events: none;
-    z-index: 10;
-}
+/* Phần text overlay đã được quản lý bằng các class Tailwind CSS trong passport.php */
 
 /* Modal overlay */
 .modal {

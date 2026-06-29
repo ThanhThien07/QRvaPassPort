@@ -103,7 +103,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </script>
     <!-- CSS chính (Tối giản chỉ giữ card & animation) -->
-    <link rel="stylesheet" href="assets/css/style.css?v=1.0.4">
+    <link rel="stylesheet" href="assets/css/style.css?v=1.1.0">
+    <!-- Meta để tránh WebView cache quá cũ -->
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+    <meta name="format-detection" content="telephone=no">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -147,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
 
                 <!-- Form -->
-                <form action="register.php" method="POST" class="space-y-5" onsubmit="document.getElementById('btn-submit').disabled=true; document.getElementById('btn-submit').innerHTML='<i class=\'fa-solid fa-spinner fa-spin mr-1.5\'></i> Đang tạo...';">
+                <form action="register.php" method="POST" class="space-y-5" id="register-form">
                     
                     <!-- Lựa chọn đối tượng (Role) -->
                     <div>
@@ -245,6 +248,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Thay đổi nút submit
                 btnSubmit.className = 'w-full py-4 px-6 rounded-2xl font-bold text-base bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-amber-500/30 hover:brightness-105 active:translate-y-0 active:shadow-lg transition-all duration-300';
             }
+        }
+
+        // Xử lý submit form - tránh lỗi nút bị lock vĩnh viễn trên Android WebView
+        const registerForm = document.getElementById('register-form');
+        if (registerForm) {
+            registerForm.addEventListener('submit', function() {
+                const btn = document.getElementById('btn-submit');
+                const originalHTML = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang tạo...';
+                // Tự động mở khóa nút sau 15 giây nếu mạng chậm hoặc WebView cancel request
+                setTimeout(function() {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHTML;
+                }, 15000);
+            });
         }
 
         // Tự động chạy khi khởi chạy để đồng bộ hóa nếu ấn nút F5 có lưu dữ liệu POST cũ

@@ -30,6 +30,14 @@ if (!$passport) {
     $avatar = $passport['avatar'];
     $created_at = date('d/m/Y H:i', strtotime($passport['created_at']));
     
+    // Convert ảnh thư mời sang Base64 để nhúng inline vào HTML (giải quyết triệt để lỗi mất ảnh nền khi tải trên điện thoại)
+    $thumoi_path = 'anh/final-thumoi.png';
+    $thumoi_base64 = '';
+    if (file_exists($thumoi_path)) {
+        $thumoi_data = file_get_contents($thumoi_path);
+        $thumoi_base64 = 'data:image/png;base64,' . base64_encode($thumoi_data);
+    }
+    
     // Phân loại nhãn vai trò và màu sắc
     $role_label = ($role === 'student') ? 'Học Sinh' : 'Phụ Huynh';
     $theme_class = ($role === 'student') ? 'student' : 'parent';
@@ -80,10 +88,10 @@ if (!$passport) {
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="min-h-screen flex flex-col antialiased text-slate-800">
+<body class="min-h-screen flex flex-col antialiased text-slate-800 print:bg-white print:m-0 print:p-0 print:h-auto">
 
     <!-- Header -->
-    <header class="sticky top-0 z-50 flex justify-between items-center px-6 py-4 bg-white/75 backdrop-blur-md border-b border-slate-200/80 no-print">
+    <header class="sticky top-0 z-50 flex justify-between items-center px-6 py-4 bg-white/75 backdrop-blur-md border-b border-slate-200/80 print:hidden">
         <a href="index.php" class="flex items-center gap-3 no-underline text-slate-900 group">
             <div class="w-10 h-10 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl flex items-center justify-center font-extrabold text-white text-lg shadow-md group-hover:scale-105 transition-transform">P</div>
             <div>
@@ -98,7 +106,7 @@ if (!$passport) {
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 max-w-6xl w-full mx-auto px-6 py-12 flex items-center">
+    <main class="flex-1 max-w-6xl w-full mx-auto px-6 py-12 flex items-center print:p-0 print:m-0 print:max-w-full print:w-full print:block">
         <?php if (isset($error_msg)): ?>
             <!-- Màn hình lỗi không tìm thấy -->
             <div class="max-w-md w-full mx-auto p-8 bg-white/85 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-xl text-center">
@@ -112,30 +120,29 @@ if (!$passport) {
         <?php else: ?>
             
             <!-- Màn hình hiển thị Passport & Vé mời thành công -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 w-full print:block">
                 
                 <!-- BÊN TRÁI: KHU VỰC HIỂN THỊ THƯ MỜI -->
-                <div class="lg:col-span-7 flex flex-col items-center justify-center">
+                <div class="lg:col-span-7 flex flex-col items-center justify-center print:w-full print:flex print:justify-center print:items-center print:p-0 print:m-0">
                     
                     <!-- KHUNG CHỨA THẺ PASSPORT -->
                     <div class="w-full max-w-[500px]">
                         
                         <!-- TẤM VÉ 1: THƯ MỜI THAM DỰ (Tương ứng file final-thumoi.png) -->
-                        <div id="theme-thumoi" class="ticket-card-container ticket-card-container-<?php echo $theme_class; ?>">
-                            <!-- Ảnh mẫu gốc từ thư mục anh -->
-                            <img class="ticket-template-img" src="anh/final-thumoi.png" alt="Vé Thư Mời" crossorigin="anonymous" onerror="this.removeAttribute('crossorigin'); this.src='uploads/default.png';">
+                        <div id="theme-thumoi" class="w-full max-w-[500px] relative mx-auto overflow-hidden rounded-3xl bg-white border-[3px] <?php echo ($role === 'student') ? 'border-sky-500 shadow-sky-500/15' : 'border-amber-500 shadow-amber-500/15'; ?> print:shadow-none print:border-none print:rounded-none print:max-w-full print:w-[170mm] print:mx-auto print:my-[20mm] print:break-inside-avoid">
+                            <!-- Ảnh mẫu gốc dạng inline Base64 để tránh lỗi bảo mật (CORS/Sandbox) trên mobile -->
+                            <img class="w-full h-auto block select-none pointer-events-none" src="<?php echo $thumoi_base64 ?: 'uploads/default.png'; ?>" alt="Vé Thư Mời">
                             
                             <!-- Họ tên đè lên (Overlay) - Căn giữa trong phạm vi kẻ chấm bằng Tailwind CSS -->
                             <div class="absolute top-[45%] left-[26%] w-[61%] text-center leading-none whitespace-nowrap overflow-hidden text-[#5c1d0c] font-serif italic font-bold pointer-events-none z-10" id="overlay-tm-name">
                                 <?php echo htmlspecialchars($fullname); ?>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
                 <!-- BÊN PHẢI: THÔNG TIN CHI TIẾT VÀ NÚT TẢI VỀ -->
-                <div class="lg:col-span-5 flex flex-col justify-center no-print">
+                <div class="lg:col-span-5 flex flex-col justify-center print:hidden">
                     <div class="p-8 md:p-10 bg-white border border-slate-100 rounded-3xl shadow-xl shadow-slate-100">
                         
                         <!-- Hiển thị thông báo nếu vừa đăng ký xong -->
@@ -171,7 +178,7 @@ if (!$passport) {
                         </ul>
 
                         <!-- Nút thao tác -->
-                        <div class="no-print">
+                        <div class="print:hidden">
                             <button onclick="downloadPNG()" class="w-full inline-flex items-center justify-center gap-2 py-4 px-6 rounded-2xl font-bold text-base text-white bg-gradient-to-r <?php echo $accent_gradient; ?> shadow-lg <?php echo $accent_shadow_glow; ?> hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300" id="btn-download-png">
                                 <i class="fa-solid fa-file-image"></i> Tải ảnh Thư Mời (PNG)
                             </button>
@@ -185,7 +192,7 @@ if (!$passport) {
     </main>
 
     <!-- Footer -->
-    <footer class="text-center py-8 border-t border-slate-200/60 mt-auto text-slate-400 text-sm no-print">
+    <footer class="text-center py-8 border-t border-slate-200/60 mt-auto text-slate-400 text-sm print:hidden">
         <p>&copy; 2026 Hệ thống Passport Điện Tử Học Đường. Phát triển bởi Antigravity AI.</p>
     </footer>
 
@@ -196,15 +203,14 @@ if (!$passport) {
     <?php if (!isset($error_msg)): ?>
     <!-- Script xử lý logic tại trang Passport -->
     <script>
-        // Tự động điều chỉnh cỡ chữ theo kích thước card (Laptop & Mobile)
+        // Tự động điều chỉnh cỡ chữ vừa vặn trong khung chấm (3.8% chiều rộng card)
         function adjustNameFontSize() {
             const container = document.getElementById('theme-thumoi');
             const nameOverlay = document.getElementById('overlay-tm-name');
             if (container && nameOverlay) {
                 const containerWidth = container.offsetWidth;
                 if (containerWidth > 0) {
-                    // 4% chiều rộng card → tự co giãn trên mọi thiết bị
-                    nameOverlay.style.fontSize = Math.round(containerWidth * 0.04) + 'px';
+                    nameOverlay.style.fontSize = Math.round(containerWidth * 0.038) + 'px';
                 }
             }
         }

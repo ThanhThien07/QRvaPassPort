@@ -35,8 +35,6 @@ $register_url = getBaseUrl() . 'register.php';
             }
         }
     </script>
-    <!-- CSS chính -->
-    <link rel="stylesheet" href="assets/css/style.css?v=1.0.4">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -50,15 +48,6 @@ $register_url = getBaseUrl() . 'register.php';
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-        }
-
-        /* Khi hiển thị trên màn hình, giả lập trang giấy A4 */
-        .poster-preview-wrapper {
-            background: #ffffff;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 2rem;
         }
 
         @page {
@@ -96,7 +85,7 @@ $register_url = getBaseUrl() . 'register.php';
 <body class="antialiased">
 
     <!-- Thanh điều khiển nổi trên màn hình (Ẩn khi in) -->
-    <div class="no-print flex flex-wrap gap-6 items-center bg-slate-900/95 border border-slate-850 px-8 py-4 rounded-full shadow-2xl fixed bottom-8 z-50 backdrop-blur-md">
+    <div class="print:hidden flex flex-wrap gap-6 items-center bg-slate-900/95 border border-slate-800 px-8 py-4 rounded-full shadow-2xl fixed bottom-8 z-50 backdrop-blur-md">
         <span class="text-slate-400 text-sm">
             <i class="fa-solid fa-link text-sky-500 mr-1"></i> URL QR đăng ký: <strong class="font-mono text-sky-400"><?php echo htmlspecialchars($register_url); ?></strong>
         </span>
@@ -109,31 +98,29 @@ $register_url = getBaseUrl() . 'register.php';
     </div>
 
     <!-- Khung Poster A4 -->
-    <div class="poster-preview-wrapper">
-        <div class="poster-container">
+    <div class="poster-preview-wrapper bg-white shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-lg overflow-hidden mb-8 print:shadow-none print:rounded-none print:m-0 print:w-[210mm] print:h-[297mm]">
+        <div class="poster-container bg-white text-black w-[210mm] h-[297mm] mx-auto p-[20mm] box-border flex flex-col justify-between items-center border-[15px] border-double border-slate-800 relative print:w-[210mm] print:h-[297mm] print:border-[15px] print:border-double print:border-slate-800 print:box-border print:m-0 print:p-[20mm] print:break-inside-avoid">
             <!-- Header -->
-            <div class="poster-header">
-                <div class="poster-logo">
+            <div class="text-center w-full">
+                <div class="text-[2.8rem] font-black text-slate-900 tracking-[2px]">
                     <i class="fa-solid fa-id-card" style="color: #1e3a8a;"></i> PASSPORT ĐIỆN TỬ
                 </div>
-                <div class="poster-subtitle">HỆ THỐNG QUẢN LÝ THÔNG TIN SỰ KIỆN HỌC ĐƯỜNG</div>
+                <div class="text-[1.6rem] text-slate-500 mt-[0.8rem] font-semibold">HỆ THỐNG QUẢN LÝ THÔNG TIN SỰ KIỆN HỌC ĐƯỜNG</div>
             </div>
 
             <!-- Title chính -->
             <div style="text-align: center;">
-                <h1 class="poster-title">QUÉT MÃ ĐỂ ĐĂNG KÝ</h1>
-                <p class="poster-subtitle" style="margin-top: 0.5rem; color: #1e3a8a; font-weight: 700;">Nhận ngay Passport điện tử & Vé mời tham gia sự kiện</p>
+                <h1 class="text-[3.2rem] font-extrabold text-[#1e3a8a] mt-[1.5rem] leading-[1.25] uppercase">QUÉT MÃ ĐỂ ĐĂNG KÝ</h1>
+                <p class="text-[1.6rem] text-slate-500 mt-[0.8rem] font-semibold" style="margin-top: 0.5rem; color: #1e3a8a; font-weight: 700;">Nhận ngay Passport điện tử & Vé mời tham gia sự kiện</p>
             </div>
 
             <!-- Khung chứa mã QR khổng lồ -->
-            <div class="poster-qr-wrapper">
-                <div id="poster-qr-code"></div>
+            <div class="w-[120mm] h-[120mm] border-[6px] border-[#1e3a8a] p-[10mm] rounded-[24px] bg-white flex items-center justify-center shadow-lg shadow-slate-200/50">
+                <div id="poster-qr-code" class="w-full h-full [&_canvas]:!w-full [&_canvas]:!h-full [&_img]:!w-full [&_img]:!h-full"></div>
             </div>
 
-
-
             <!-- Footer -->
-            <div class="poster-footer">
+            <div class="text-center text-[1.2rem] text-slate-400 w-full border-t border-slate-200 pt-4">
                 <p>Mã QR cố định sự kiện - Vui lòng đặt tại bàn đón tiếp khách</p>
                 <p style="font-size: 0.9rem; margin-top: 0.3rem; color: #9ca3af;">Hệ thống Passport Điện Tử Học Đường &copy; 2026</p>
             </div>

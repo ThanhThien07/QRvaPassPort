@@ -130,13 +130,7 @@ $register_url = getBaseUrl() . 'register.php';
                 <div id="poster-qr-code"></div>
             </div>
 
-            <!-- Hướng dẫn chi tiết -->
-            <div class="poster-instructions">
-                <h3><i class="fa-solid fa-mobile-screen-button" style="color: #1e3a8a; margin-right: 0.5rem;"></i> Hướng dẫn thực hiện:</h3>
-                <p>1. Sử dụng ứng dụng <strong>Camera điện thoại</strong>, <strong>Zalo</strong>, hoặc trình quét QR bất kỳ.</p>
-                <p style="margin-top: 0.3rem;">2. Quét mã QR ở trên để truy cập biểu mẫu đăng ký trực tuyến.</p>
-                <p style="margin-top: 0.3rem;">3. Điền đầy đủ thông tin và nhận ngay thẻ Passport & Vé mời của bạn!</p>
-            </div>
+
 
             <!-- Footer -->
             <div class="poster-footer">

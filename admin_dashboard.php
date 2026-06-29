@@ -442,16 +442,11 @@ $passports_list = $stmt->fetchAll();
                     Hành động này không thể hoàn tác và sẽ dọn dẹp file ảnh trên máy chủ.
                 </p>
                 
-                <div class="flex flex-col gap-2.5">
-                    <div class="flex gap-3">
-                        <button onclick="confirmDeleteAction()" id="delete-btn-confirm" class="flex-1 px-5 py-3 rounded-2xl font-bold text-sm bg-rose-500 text-white shadow-md shadow-rose-500/10 hover:bg-rose-600 active:scale-[0.98] transition-all">
-                            Có (<span id="delete-timer">10</span>s)
-                        </button>
-                        <button onclick="resetDeleteTimer()" id="delete-btn-reset" class="px-5 py-3 rounded-2xl font-bold text-sm bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 active:scale-[0.98] transition-all" title="Reset đếm ngược 10 giây">
-                            <i class="fa-solid fa-rotate-left mr-1"></i> Chọn lại
-                        </button>
-                    </div>
-                    <button type="button" class="w-full py-3 rounded-2xl font-bold text-sm bg-slate-100 text-slate-500 hover:bg-slate-200/80 hover:text-slate-700 active:scale-[0.98] transition-all" onclick="closeDeleteConfirmModal()">Không xóa (Hủy)</button>
+                <div class="flex gap-3">
+                    <button onclick="confirmDeleteAction()" id="delete-btn-confirm" class="flex-1 px-5 py-3 rounded-2xl font-bold text-sm bg-rose-500 text-white shadow-md shadow-rose-500/10 hover:bg-rose-600 active:scale-[0.98] transition-all">
+                        Có (<span id="delete-timer">10</span>s)
+                    </button>
+                    <button type="button" class="flex-1 px-5 py-3 rounded-2xl font-bold text-sm bg-slate-100 text-slate-500 hover:bg-slate-200/80 hover:text-slate-700 active:scale-[0.98] transition-all" onclick="closeDeleteConfirmModal()">Không xóa (Hủy)</button>
                 </div>
             </div>
         </div>
@@ -461,6 +456,7 @@ $passports_list = $stmt->fetchAll();
     <!-- 4. MODAL XÓA THÀNH CÔNG (DELETE SUCCESS MODAL) -->
     <div id="deleteSuccessModal" class="modal">
         <div class="bg-white border border-slate-200 rounded-3xl p-8 max-w-sm w-full mx-4 shadow-2xl relative animate-[scaleIn_0.3s_ease]">
+            <button class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 text-2xl font-bold outline-none" onclick="closeDeleteSuccessModal()">&times;</button>
             <div class="text-center">
                 <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-inner">
                     <i class="fa-solid fa-circle-check"></i>
@@ -638,6 +634,7 @@ $passports_list = $stmt->fetchAll();
             const editModal = document.getElementById('editModal');
             const addModal = document.getElementById('addModal');
             const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+            const deleteSuccessModal = document.getElementById('deleteSuccessModal');
             if (event.target == editModal) {
                 closeEditModal();
             }
@@ -646,6 +643,9 @@ $passports_list = $stmt->fetchAll();
             }
             if (event.target == deleteConfirmModal) {
                 closeDeleteConfirmModal();
+            }
+            if (event.target == deleteSuccessModal) {
+                closeDeleteSuccessModal();
             }
         }
 
@@ -744,6 +744,15 @@ $passports_list = $stmt->fetchAll();
             if (deleteTimerInterval) {
                 clearInterval(deleteTimerInterval);
                 deleteTimerInterval = null;
+            }
+        }
+
+        function closeDeleteSuccessModal() {
+            const successModal = document.getElementById('deleteSuccessModal');
+            successModal.classList.remove('show');
+            if (deleteSuccessTimeout) {
+                clearTimeout(deleteSuccessTimeout);
+                deleteSuccessTimeout = null;
             }
         }
 

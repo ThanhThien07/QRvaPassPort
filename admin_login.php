@@ -112,13 +112,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <!-- Username -->
                     <div>
                         <label class="block font-semibold text-slate-700 text-sm mb-2"><i class="fa-solid fa-user mr-1.5 text-slate-400"></i> Tên đăng nhập</label>
-                        <input type="text" name="username" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3.5 px-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300" placeholder="Tài khoản mặc định: admin" required autocomplete="off">
+                        <input type="text" name="username" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3.5 px-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300" placeholder="Nhập tên đăng nhập..." required autocomplete="off">
                     </div>
 
                     <!-- Password -->
                     <div>
                         <label class="block font-semibold text-slate-700 text-sm mb-2"><i class="fa-solid fa-lock mr-1.5 text-slate-400"></i> Mật khẩu</label>
-                        <input type="password" name="password" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3.5 px-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300" placeholder="Mật khẩu mặc định: admin123" required>
+                        <input type="password" name="password" class="w-full bg-slate-50 border border-slate-200/80 rounded-2xl py-3.5 px-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10 focus:bg-white transition-all duration-300" placeholder="Nhập mật khẩu..." required>
                     </div>
 
                     <!-- Nút Submit -->
@@ -126,11 +126,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <i class="fa-solid fa-right-to-bracket mr-1.5"></i> Đăng Nhập Hệ Thống
                     </button>
                 </form>
-                
-                <div class="mt-6 pt-5 border-t border-slate-100 text-center text-slate-400 text-xs">
-                    <p class="mb-1"><i class="fa-solid fa-info-circle mr-1"></i> Tài khoản trải nghiệm:</p>
-                    <p class="font-mono font-bold text-slate-600">User: <span class="text-sky-600">admin</span> / Pass: <span class="text-sky-600">admin123</span></p>
-                </div>
             </div>
         </div>
     </main>

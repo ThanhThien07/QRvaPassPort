@@ -42,8 +42,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
             $row['passport_code'],
             $row['fullname'],
             $row['role'] === 'student' ? 'Học sinh' : 'Phụ huynh',
-            $row['phone'],
-            $row['created_at']
+            "\t" . $row['phone'],
+            "\t" . $row['created_at']
         ]);
     }
     fclose($output);
@@ -427,6 +427,50 @@ $passports_list = $stmt->fetchAll();
         </div>
     </div>
 
+    <!-- ============================================== -->
+    <!-- 3. MODAL XÁC NHẬN XÓA (DELETE CONFIRM MODAL) -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl relative animate-[scaleIn_0.3s_ease]">
+            <button class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 text-2xl font-bold outline-none" onclick="closeDeleteConfirmModal()">&times;</button>
+            <div class="text-center">
+                <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-inner">
+                    <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
+                </div>
+                <h3 class="text-xl font-extrabold text-slate-800 mb-2">Xác nhận xóa Passport</h3>
+                <p class="text-slate-500 text-sm mb-6 leading-relaxed">
+                    Bạn có chắc chắn muốn xóa Passport của <strong id="delete-fullname-text" class="text-slate-800"></strong>?<br>
+                    Hành động này không thể hoàn tác và sẽ dọn dẹp file ảnh trên máy chủ.
+                </p>
+                
+                <div class="flex flex-col gap-2.5">
+                    <div class="flex gap-3">
+                        <button onclick="confirmDeleteAction()" id="delete-btn-confirm" class="flex-1 px-5 py-3 rounded-2xl font-bold text-sm bg-rose-500 text-white shadow-md shadow-rose-500/10 hover:bg-rose-600 active:scale-[0.98] transition-all">
+                            Có (<span id="delete-timer">10</span>s)
+                        </button>
+                        <button onclick="resetDeleteTimer()" id="delete-btn-reset" class="px-5 py-3 rounded-2xl font-bold text-sm bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 active:scale-[0.98] transition-all" title="Reset đếm ngược 10 giây">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Chọn lại
+                        </button>
+                    </div>
+                    <button type="button" class="w-full py-3 rounded-2xl font-bold text-sm bg-slate-100 text-slate-500 hover:bg-slate-200/80 hover:text-slate-700 active:scale-[0.98] transition-all" onclick="closeDeleteConfirmModal()">Không xóa (Hủy)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- 4. MODAL XÓA THÀNH CÔNG (DELETE SUCCESS MODAL) -->
+    <div id="deleteSuccessModal" class="modal">
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 max-w-sm w-full mx-4 shadow-2xl relative animate-[scaleIn_0.3s_ease]">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-inner">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <h3 class="text-xl font-extrabold text-slate-800 mb-1">Đã xóa thành công!</h3>
+                <p class="text-slate-500 text-sm" id="delete-success-text"></p>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="text-center py-6 border-t border-slate-200/60 mt-auto text-slate-400 text-sm no-print">
         <p>&copy; 2026 Hệ thống Passport Điện Tử Học Đường. Phát triển bởi Antigravity AI.</p>
@@ -589,15 +633,19 @@ $passports_list = $stmt->fetchAll();
             document.getElementById('addModal').classList.add('show');
         }
 
-        // Đóng Add Modal bằng click bên ngoài
+        // Đóng các Modal bằng click bên ngoài
         window.onclick = function(event) {
             const editModal = document.getElementById('editModal');
             const addModal = document.getElementById('addModal');
+            const deleteConfirmModal = document.getElementById('deleteConfirmModal');
             if (event.target == editModal) {
                 closeEditModal();
             }
             if (event.target == addModal) {
                 closeAddModal();
+            }
+            if (event.target == deleteConfirmModal) {
+                closeDeleteConfirmModal();
             }
         }
 
@@ -640,36 +688,93 @@ $passports_list = $stmt->fetchAll();
         }
 
         // --- 3. XÓA BẢN GHI (DELETE) ---
-        function deleteMember(id, name) {
-            if (confirm('Bạn có chắc chắn muốn xóa Passport của "' + name + '" không?\nHành động này không thể hoàn tác và sẽ dọn dẹp file ảnh trên máy chủ.')) {
-                const formData = new FormData();
-                formData.append('id', id);
+        let deleteId = null;
+        let deleteName = "";
+        let deleteTimerSeconds = 10;
+        let deleteTimerInterval = null;
+        let deleteSuccessTimeout = null;
 
-                fetch('ajax_handler.php?action=delete', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(res => res.json())
-                .then(response => {
-                    if (response.success) {
-                        // Tạo hiệu ứng biến mất (fade out) mượt mà cho dòng bị xóa
-                        const row = document.getElementById('row-' + id);
+        function deleteMember(id, name) {
+            deleteId = id;
+            deleteName = name;
+            deleteTimerSeconds = 10;
+
+            document.getElementById('delete-fullname-text').textContent = name;
+            document.getElementById('delete-timer').textContent = deleteTimerSeconds;
+
+            const deleteModal = document.getElementById('deleteConfirmModal');
+            deleteModal.classList.add('show');
+
+            if (deleteTimerInterval) {
+                clearInterval(deleteTimerInterval);
+            }
+
+            deleteTimerInterval = setInterval(() => {
+                deleteTimerSeconds--;
+                document.getElementById('delete-timer').textContent = deleteTimerSeconds;
+
+                if (deleteTimerSeconds <= 0) {
+                    clearInterval(deleteTimerInterval);
+                    deleteTimerInterval = null;
+                    confirmDeleteAction();
+                }
+            }, 1000);
+        }
+
+        function resetDeleteTimer() {
+            deleteTimerSeconds = 10;
+            document.getElementById('delete-timer').textContent = deleteTimerSeconds;
+            if (!deleteTimerInterval) {
+                deleteTimerInterval = setInterval(() => {
+                    deleteTimerSeconds--;
+                    document.getElementById('delete-timer').textContent = deleteTimerSeconds;
+
+                    if (deleteTimerSeconds <= 0) {
+                        clearInterval(deleteTimerInterval);
+                        deleteTimerInterval = null;
+                        confirmDeleteAction();
+                    }
+                }, 1000);
+            }
+        }
+
+        function closeDeleteConfirmModal() {
+            const deleteModal = document.getElementById('deleteConfirmModal');
+            deleteModal.classList.remove('show');
+            if (deleteTimerInterval) {
+                clearInterval(deleteTimerInterval);
+                deleteTimerInterval = null;
+            }
+        }
+
+        function confirmDeleteAction() {
+            closeDeleteConfirmModal();
+
+            const formData = new FormData();
+            formData.append('id', deleteId);
+
+            fetch('ajax_handler.php?action=delete', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(response => {
+                if (response.success) {
+                    const row = document.getElementById('row-' + deleteId);
+                    if (row) {
                         row.style.transition = 'all 0.5s ease';
                         row.style.opacity = '0';
                         row.style.transform = 'translateX(50px)';
                         
                         setTimeout(() => {
                             row.remove();
-                            // Cập nhật lại số liệu trên các thẻ thống kê nhanh mà không cần F5
                             const totalEl = document.getElementById('stat-total');
                             const studentEl = document.getElementById('stat-student');
                             const parentEl = document.getElementById('stat-parent');
                             
-                            // Lấy số hiện tại trừ đi 1
                             let total = parseInt(totalEl.textContent.replace(/,/g, '')) - 1;
                             totalEl.textContent = total.toLocaleString();
                             
-                            // Xác định vai trò để trừ
                             const roleBadge = row.querySelector('.badge-role');
                             if (roleBadge && roleBadge.textContent.trim().toLowerCase().includes('học sinh')) {
                                 let student = parseInt(studentEl.textContent.replace(/,/g, '')) - 1;
@@ -678,19 +783,28 @@ $passports_list = $stmt->fetchAll();
                                 let parent = parseInt(parentEl.textContent.replace(/,/g, '')) - 1;
                                 parentEl.textContent = parent.toLocaleString();
                             }
-                            
-                            // Báo thành công
-                            alert(response.message);
                         }, 500);
-                    } else {
-                        alert(response.message);
                     }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Có lỗi xảy ra khi thực hiện yêu cầu xóa!');
-                });
-            }
+
+                    const successModal = document.getElementById('deleteSuccessModal');
+                    document.getElementById('delete-success-text').textContent = 'Passport của "' + deleteName + '" đã được xóa khỏi hệ thống.';
+                    successModal.classList.add('show');
+
+                    if (deleteSuccessTimeout) {
+                        clearTimeout(deleteSuccessTimeout);
+                    }
+                    deleteSuccessTimeout = setTimeout(() => {
+                        successModal.classList.remove('show');
+                    }, 3000);
+
+                } else {
+                    alert(response.message);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Có lỗi xảy ra khi thực hiện yêu cầu xóa!');
+            });
         }
 
         // ====================================================

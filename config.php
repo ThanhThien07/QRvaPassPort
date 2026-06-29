@@ -157,8 +157,8 @@ function syncDatabaseToCsv($pdo) {
                     $row['passport_code'],
                     $row['fullname'],
                     $row['role'] === 'student' ? 'Học sinh' : 'Phụ huynh',
-                    $row['phone'],
-                    $row['created_at']
+                    "\t" . $row['phone'],
+                    "\t" . $row['created_at']
                 ]);
             }
             fclose($fp);

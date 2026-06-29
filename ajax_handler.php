@@ -113,7 +113,7 @@ switch ($action) {
             syncDatabaseToCsv($pdo);
 
             // Nếu xóa thành công và file avatar không phải mặc định, thực hiện xóa file trên ổ đĩa
-            if ($avatar && $avatar !== 'uploads/default.png' && file_exists($avatar)) {
+            if ($avatar && $avatar !== 'anh/default.png' && file_exists($avatar)) {
                 @unlink($avatar);
             }
 
@@ -155,7 +155,7 @@ switch ($action) {
 
             // Sinh mã Passport duy nhất
             $passport_code = generatePassportCode($pdo, $role);
-            $avatar_path = 'uploads/default.png'; // Thêm thủ công mặc định dùng avatar mặc định
+            $avatar_path = 'anh/default.png'; // Thêm thủ công mặc định dùng avatar mặc định
 
             // Thực hiện thêm mới
             $stmt = $pdo->prepare("

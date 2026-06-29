@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // 3. Xử lý ảnh đại diện (Mặc định theo yêu cầu, không cần tải lên)
-    $avatar_path = 'uploads/default.png';
+    $avatar_path = 'anh/default.png';
 
     // 4. Lưu vào database và chuyển hướng
     if (empty($errors)) {

@@ -131,7 +131,7 @@ if (!$passport) {
                         <!-- TẤM VÉ 1: THƯ MỜI THAM DỰ (Tương ứng file final-thumoi.png) -->
                         <div id="theme-thumoi" class="w-full max-w-[500px] relative mx-auto overflow-hidden rounded-3xl bg-white border-[3px] <?php echo ($role === 'student') ? 'border-sky-500 shadow-sky-500/15' : 'border-amber-500 shadow-amber-500/15'; ?> print:shadow-none print:border-none print:rounded-none print:max-w-full print:w-[170mm] print:mx-auto print:my-[20mm] print:break-inside-avoid">
                             <!-- Ảnh mẫu gốc dạng inline Base64 để tránh lỗi bảo mật (CORS/Sandbox) trên mobile -->
-                            <img class="w-full h-auto block select-none pointer-events-none" src="<?php echo $thumoi_base64 ?: 'uploads/default.png'; ?>" alt="Vé Thư Mời">
+                            <img class="w-full h-auto block select-none pointer-events-none" src="<?php echo $thumoi_base64 ?: 'anh/default.png'; ?>" alt="Vé Thư Mời">
                             
                             <!-- Họ tên đè lên (Overlay) - Căn giữa trong phạm vi kẻ chấm bằng Tailwind CSS -->
                             <div class="absolute top-[45%] left-[26%] w-[61%] text-center leading-none whitespace-nowrap overflow-hidden text-[#5c1d0c] font-serif italic font-bold pointer-events-none z-10" id="overlay-tm-name">

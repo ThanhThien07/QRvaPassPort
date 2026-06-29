@@ -175,6 +175,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search_query'])) {
     </footer>
 
     <!-- JS chính -->
-    <script src="assets/js/main.js"></script>
+
 </body>
 </html>

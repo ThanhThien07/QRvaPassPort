@@ -217,7 +217,7 @@ if (!$passport) {
 
         // TẢI ẢNH PNG
         // Fix lỗi trên Android/Mobile: đợi ảnh template load xong, dùng allowTaint + imageTimeout cao hơn
-        function downloadPNG() {
+        async function downloadPNG() {
             const invitationCard = document.getElementById('theme-thumoi');
             const nameOverlay = document.getElementById('overlay-tm-name');
             const btn = document.getElementById('btn-download-png');
@@ -225,9 +225,14 @@ if (!$passport) {
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang xuất ảnh...';
             btn.disabled = true;
 
+            // Chờ font chữ được tải xong hoàn toàn theo hướng dẫn
+            if (document.fonts && document.fonts.ready) {
+                await document.fonts.ready;
+            }
+
             const templateImg = invitationCard.querySelector('.ticket-template-img');
 
-            function doRender() {
+            async function doRender() {
                 const currentFontSize = nameOverlay.style.fontSize;
 
                 html2canvas(invitationCard, {

@@ -66,30 +66,38 @@ html, body {
 }
 
 .overlay-name-thumoi {
-    /* Dòng "Kính mời" nằm ở khoảng 49.5% từ trên xuống của ảnh */
-    top: 49.5%;
-    bottom: auto;
-    /* Phạm vi từ sau chữ "Kính mời" đến trước dấu 3 chấm cuối cùng */
-    left: 24.5%;
-    right: 5%;
-    /* Chiều cao đủ để chứa 1 dòng chữ */
-    height: 4.5cqw;
+    /*
+     * VỊ TRÍ ĐO THỰC TẾ TỪ ẢNH final-thumoi.png (1536×1024px):
+     * - Center Y của dòng "Kính mời": 47.94% từ đỉnh ảnh
+     * - Vùng "..." bắt đầu từ: 25.96% từ cạnh trái ảnh
+     * - Vùng "..." kết thúc tại: 87.18% từ cạnh trái ảnh → width = 61.22%
+     * - Chiều cao chữ "Kính mời": ~17px / 1024px = 1.11cqw
+     *
+     * NGUYÊN TẮC CĂN CHỈNH:
+     * top = center Y → transform translateY(-50%) → tên ngang hàng tâm dọc với "Kính mời"
+     * left + width xác định đúng phạm vi vùng "..."
+     */
+    position: absolute;
+    top: 50.5%;              /* Tâm Y của dòng "Kính mời" (tinh chỉnh lần cuối) */
+    left: 25.96%;             /* Bắt đầu vùng "..." (sau dấu ":") */
+    width: 61.22%;            /* Chiều rộng vùng "..." đến cuối đường chấm */
+    height: 1.8cqw;           /* Khung đủ rộng để chứa tên (1.8x chiều cao chữ) */
+    transform: translateY(-50%); /* Căn giữa dọc: tên nằm NGANG HÀNG với "Kính mời" */
     display: flex;
     align-items: center;
-    justify-content: center; /* Căn giữa tên trong vùng dấu 3 chấm */
-    transform: none; /* Tránh lỗi lệch vị trí của html2canvas */
-    text-align: center; /* Căn giữa chữ trong phạm vi hai dấu 3 chấm */
+    justify-content: center;  /* Căn giữa ngang trong phạm vi vùng "..." */
+    text-align: center;
     overflow: hidden;
-    font-size: 11px; /* Cỡ chữ mặc định làm fallback */
-    font-size: 2.2cqw; /* Cỡ chữ nhỏ nhắn, tinh tế và tương xứng với chữ "Kính mời" */
-    color: #5c1d0c; /* Màu đỏ nâu giống chữ Kính Gửi gốc */
+    white-space: nowrap;
+    font-size: 1.6cqw;        /* Cỡ chữ vừa phải, dễ đọc, tương đương cỡ chữ "Kính mời" */
+    color: #5c1d0c;           /* Màu đỏ nâu giống chữ "Kính mời" gốc */
     font-family: 'Times New Roman', Times, serif;
     font-style: italic;
     font-weight: bold;
-    text-shadow: none; /* Bỏ text-shadow để giống in thật */
-    white-space: nowrap;
+    text-shadow: none;
     letter-spacing: 0.5px;
-    text-transform: capitalize; /* Tự động viết hoa chữ cái đầu tiên của từng từ ở phía client */
+    text-transform: capitalize;
+    pointer-events: none;
 }
 
 /* Modal overlay */

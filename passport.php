@@ -197,21 +197,21 @@ if (!$passport) {
     <!-- Script xử lý logic tại trang Passport -->
     <script>
         // TỰ ĐỘNG ĐIỀU CHỈNH CỠ CHỮ TRÊN TRÌNH DUYỆT
-        // Hoạt động với overlay dùng flex (justify-content: center)
+        // Font mặc định = 1.11cqw, chỉ thu nhỏ nếu tên quá dài
         function adjustNameFontSize() {
             const invitationCard = document.getElementById('theme-thumoi');
             const nameOverlay = document.getElementById('overlay-tm-name');
             if (invitationCard && nameOverlay) {
                 const actualWidth = invitationCard.offsetWidth;
                 
-                // Cỡ chữ lý tưởng ban đầu dựa trên chiều rộng thẻ
-                let targetFontSize = actualWidth * 0.022;
+                // Cỡ chữ cơ sở = 1.6% chiều rộng card (khớp với 1.6cqw trong CSS)
+                let targetFontSize = actualWidth * 0.016;
                 nameOverlay.style.fontSize = targetFontSize + 'px';
                 
                 // Thu nhỏ dần cỡ chữ nếu tên quá dài làm tràn khung chứa
                 let maxIterations = 30;
-                while (nameOverlay.scrollWidth > nameOverlay.clientWidth + 2 && targetFontSize > 6 && maxIterations > 0) {
-                    targetFontSize -= 0.3;
+                while (nameOverlay.scrollWidth > nameOverlay.clientWidth + 2 && targetFontSize > 4 && maxIterations > 0) {
+                    targetFontSize -= 0.2;
                     nameOverlay.style.fontSize = targetFontSize + 'px';
                     maxIterations--;
                 }
@@ -256,6 +256,8 @@ if (!$passport) {
                             clonedName.style.alignItems = 'center';
                             clonedName.style.justifyContent = 'center';
                             clonedName.style.textAlign = 'center';
+                            // GIỮ transform translateY(-50%) để tên ngang hàng đúng với "Kính mời"
+                            clonedName.style.transform = 'translateY(-50%)';
                         }
                     }
                 }).then(canvas => {

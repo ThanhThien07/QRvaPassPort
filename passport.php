@@ -125,8 +125,8 @@ if (!$passport) {
                             <!-- Ảnh mẫu gốc từ thư mục anh -->
                             <img class="ticket-template-img" src="anh/final-thumoi.png" alt="Vé Thư Mời" crossorigin="anonymous" onerror="this.removeAttribute('crossorigin'); this.src='uploads/default.png';">
                             
-                            <!-- Họ tên đè lên (Overlay) - Căn giữa trong phạm vi dấu 3 chấm, ngang với "Kính mời" -->
-                            <div class="overlay-element overlay-name-thumoi" id="overlay-tm-name">
+                            <!-- Họ tên đè lên (Overlay) - Căn trái sát Kính mời, chân chữ sát trên dòng dấu ba chấm -->
+                            <div class="overlay-name-thumoi" id="overlay-tm-name">
                                 <?php echo htmlspecialchars($fullname); ?>
                             </div>
                         </div>
@@ -196,12 +196,18 @@ if (!$passport) {
     <?php if (!isset($error_msg)): ?>
     <!-- Script xử lý logic tại trang Passport -->
     <script>
-        // CỰ CHỮ CỐ ĐỊNH 14px Times New Roman
+        // Tự động điều chỉnh cỡ chữ theo kích thước card hiển thị (Laptop & Điện thoại)
         function adjustNameFontSize() {
+            const container = document.getElementById('theme-thumoi');
             const nameOverlay = document.getElementById('overlay-tm-name');
-            if (nameOverlay) {
-                nameOverlay.style.fontSize = '14px';
-                nameOverlay.style.height = '18px';
+            if (container && nameOverlay) {
+                const containerWidth = container.offsetWidth;
+                if (containerWidth > 0) {
+                    const calculatedFontSize = Math.round(containerWidth * 0.028); // 2.8% chiều rộng card
+                    const calculatedHeight = Math.round(containerWidth * 0.036);  // 3.6% chiều rộng card
+                    nameOverlay.style.fontSize = calculatedFontSize + 'px';
+                    nameOverlay.style.height = calculatedHeight + 'px';
+                }
             }
         }
 
@@ -234,14 +240,22 @@ if (!$passport) {
                     onclone: (clonedDoc) => {
                         const clonedName = clonedDoc.getElementById('overlay-tm-name');
                         if (clonedName) {
-                            clonedName.style.cssText = nameOverlay.style.cssText;
-                            clonedName.style.fontSize = '14px';
-                            clonedName.style.height = '18px';
+                            clonedName.style.fontSize = nameOverlay.style.fontSize;
+                            clonedName.style.height = nameOverlay.style.height;
+                            clonedName.style.position = 'absolute';
+                            clonedName.style.top = '52%';
+                            clonedName.style.left = '38%';
+                            clonedName.style.width = '49%';
                             clonedName.style.display = 'flex';
                             clonedName.style.alignItems = 'flex-end';
                             clonedName.style.justifyContent = 'flex-start';
                             clonedName.style.textAlign = 'left';
                             clonedName.style.transform = 'translateY(-100%)';
+                            clonedName.style.color = '#5c1d0c';
+                            clonedName.style.fontFamily = "'Times New Roman', Times, serif";
+                            clonedName.style.fontStyle = 'italic';
+                            clonedName.style.fontWeight = 'bold';
+                            clonedName.style.textShadow = 'none';
                         }
                     }
                 }).then(canvas => {

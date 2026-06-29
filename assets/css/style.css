@@ -66,38 +66,23 @@ html, body {
 }
 
 .overlay-name-thumoi {
-    /*
-     * VỊ TRÍ ĐO THỰC TẾ TỪ ẢNH final-thumoi.png (1536×1024px):
-     * - Center Y của dòng "Kính mời": 47.94% từ đỉnh ảnh
-     * - Vùng "..." bắt đầu từ: 25.96% từ cạnh trái ảnh
-     * - Vùng "..." kết thúc tại: 87.18% từ cạnh trái ảnh → width = 61.22%
-     * - Chiều cao chữ "Kính mời": ~17px / 1024px = 1.11cqw
-     *
-     * NGUYÊN TẮC CĂN CHỈNH:
-     * top = center Y → transform translateY(-50%) → tên ngang hàng tâm dọc với "Kính mời"
-     * left + width xác định đúng phạm vi vùng "..."
-     */
     position: absolute;
-    top: 50.5%;                /* Đúng vị trí dòng dấu ba chấm (đường kẻ đỏ) */
-    left: 25.96%;             /* Toàn bộ vùng dấu chấm (từ sau dấu ":") */
-    width: 61.22%;            /* Chiều rộng đến cuối dòng chấm */
-    height: 3.6cqw;            /* Chiều cao khung tương ứng tỉ lệ */
-    transform: translateY(-100%); /* Chân chữ nằm SÁT TRÊN dấu ba chấm */
+    top: 53%;            /* Hạ xuống để chân chữ bám đúng dòng kẻ chấm sau khi translate(-100%) */
+    left: 26.5%;         /* Bắt đầu ngay sau dấu ':' của Kính mời */
+    width: 60%;          /* Giới hạn độ rộng để chữ không tràn ra ngoài */
+    transform: translateY(-100%); /* Kéo chữ lên để chân chữ bám sát đường chấm */
     display: flex;
-    align-items: flex-end;    /* Căn chân chữ xuống đáy khung */
-    justify-content: center;  /* Căn giữa theo chiều ngang */
-    text-align: center;
-    overflow: hidden;
+    align-items: flex-end;
+    justify-content: flex-start; /* Căn trái để chữ bám sát vào chữ Kính mời */
+    text-align: left;
     white-space: nowrap;
-    font-size: 2.8cqw;         /* Co giãn tự động: 2.8% chiều rộng card */
+    overflow: hidden;    /* Ẩn bớt nếu tên quá dài */
     color: #5c1d0c;
     font-family: 'Times New Roman', Times, serif;
     font-style: italic;
     font-weight: bold;
-    text-shadow: none;
-    letter-spacing: 0.5px;
-    text-transform: capitalize;
     pointer-events: none;
+    z-index: 10;
 }
 
 /* Modal overlay */

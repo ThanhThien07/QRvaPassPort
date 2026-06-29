@@ -196,17 +196,18 @@ if (!$passport) {
     <?php if (!isset($error_msg)): ?>
     <!-- Script xử lý logic tại trang Passport -->
     <script>
-        // Tự động điều chỉnh cỡ chữ theo kích thước card hiển thị (Laptop & Điện thoại)
+        // Tự động điều chỉnh cỡ chữ theo kích thước card hiển thị (Cả Laptop & Mobile)
         function adjustNameFontSize() {
             const container = document.getElementById('theme-thumoi');
             const nameOverlay = document.getElementById('overlay-tm-name');
             if (container && nameOverlay) {
                 const containerWidth = container.offsetWidth;
                 if (containerWidth > 0) {
-                    const calculatedFontSize = Math.round(containerWidth * 0.028); // 2.8% chiều rộng card
-                    const calculatedHeight = Math.round(containerWidth * 0.036);  // 3.6% chiều rộng card
+                    // Hệ số 0.04 (4% chiều rộng ảnh) - to, rõ ràng, tự co giãn theo màn hình
+                    const calculatedFontSize = Math.round(containerWidth * 0.04);
                     nameOverlay.style.fontSize = calculatedFontSize + 'px';
-                    nameOverlay.style.height = calculatedHeight + 'px';
+                    // Đặt chiều cao bằng cỡ chữ + padding để không bị cắt ngọn
+                    nameOverlay.style.height = Math.round(containerWidth * 0.05) + 'px';
                 }
             }
         }
@@ -216,16 +217,14 @@ if (!$passport) {
         window.addEventListener('resize', adjustNameFontSize);
 
         // TẢI ẢNH PNG
-        // Fix lỗi trên Android/Mobile: đợi ảnh template load xong, dùng allowTaint + imageTimeout cao hơn
         async function downloadPNG() {
             const invitationCard = document.getElementById('theme-thumoi');
-            const nameOverlay = document.getElementById('overlay-tm-name');
             const btn = document.getElementById('btn-download-png');
             const originalHTML = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang xuất ảnh...';
             btn.disabled = true;
 
-            // Chờ font chữ được tải xong hoàn toàn theo hướng dẫn
+            // Chờ font chữ được tải xong hoàn toàn
             if (document.fonts && document.fonts.ready) {
                 await document.fonts.ready;
             }
@@ -233,46 +232,28 @@ if (!$passport) {
             const templateImg = invitationCard.querySelector('.ticket-template-img');
 
             async function doRender() {
-                const containerWidth = invitationCard.offsetWidth;
-                const containerHeight = invitationCard.offsetHeight;
-
-                // Tính toán toạ độ px chính xác theo tỉ lệ thực tế của card trên màn hình
-                const pixelLeft = Math.round(containerWidth * 0.2596);
-                const pixelWidth = Math.round(containerWidth * 0.6122);
-                const pixelTop = Math.round(containerHeight * 0.505);
-
                 html2canvas(invitationCard, {
                     scale: 3,
                     useCORS: true,
                     allowTaint: true,
-                    backgroundColor: '#ffffff',
+                    backgroundColor: null,
                     logging: false,
                     imageTimeout: 15000,
                     onclone: (clonedDoc) => {
                         const clonedName = clonedDoc.getElementById('overlay-tm-name');
-                        if (clonedName) {
-                            clonedName.style.fontSize = nameOverlay.style.fontSize;
-                            clonedName.style.height = nameOverlay.style.height;
-                            clonedName.style.position = 'absolute';
-                            clonedName.style.top = pixelTop + 'px';
-                            clonedName.style.left = pixelLeft + 'px';
-                            clonedName.style.width = pixelWidth + 'px';
-                            clonedName.style.display = 'flex';
-                            clonedName.style.alignItems = 'flex-end';
-                            clonedName.style.justifyContent = 'center';
-                            clonedName.style.textAlign = 'center';
-                            clonedName.style.transform = 'translateY(-100%)';
-                            clonedName.style.color = '#5c1d0c';
-                            clonedName.style.fontFamily = "'Times New Roman', Times, serif";
-                            clonedName.style.fontStyle = 'italic';
-                            clonedName.style.fontWeight = 'bold';
-                            clonedName.style.textShadow = 'none';
+                        const originalName = document.getElementById('overlay-tm-name');
+                        if (clonedName && originalName) {
+                            clonedName.style.fontSize = originalName.style.fontSize;
+                            clonedName.style.height = originalName.style.height;
+                            // Ép buộc căn trái trên bản xuất ảnh để html2canvas không tự reset
+                            clonedName.style.justifyContent = 'flex-start';
+                            clonedName.style.textAlign = 'left';
                         }
                     }
                 }).then(canvas => {
                     const link = document.createElement('a');
-                    link.download = 'ThuMoi_' + '<?php echo $passport["passport_code"]; ?>' + '.png';
-                    link.href = canvas.toDataURL('image/png');
+                    link.download = 'ThuMoi_<?php echo htmlspecialchars($passport["passport_code"] ?? time()); ?>.png';
+                    link.href = canvas.toDataURL('image/png', 1.0);
                     link.click();
 
                     btn.innerHTML = originalHTML;
@@ -286,11 +267,12 @@ if (!$passport) {
             }
 
             // Nếu ảnh template chưa load xong, chờ load xong rồi mới render
+            // Thêm delay 500ms để CPU điện thoại kịp xử lý layout trước khi chụp
             if (templateImg && !templateImg.complete) {
-                templateImg.onload = doRender;
-                templateImg.onerror = doRender; // Vẫn cố gắng render dù ảnh lỗi
+                templateImg.onload = () => setTimeout(doRender, 500);
+                templateImg.onerror = () => setTimeout(doRender, 500);
             } else {
-                doRender();
+                setTimeout(doRender, 500);
             }
         }
     </script>

@@ -244,12 +244,12 @@ if (!$passport) {
                             clonedName.style.height = nameOverlay.style.height;
                             clonedName.style.position = 'absolute';
                             clonedName.style.top = '52%';
-                            clonedName.style.left = '38%';
-                            clonedName.style.width = '49%';
+                            clonedName.style.left = '25.96%';
+                            clonedName.style.width = '61.22%';
                             clonedName.style.display = 'flex';
                             clonedName.style.alignItems = 'flex-end';
-                            clonedName.style.justifyContent = 'flex-start';
-                            clonedName.style.textAlign = 'left';
+                            clonedName.style.justifyContent = 'center';
+                            clonedName.style.textAlign = 'center';
                             clonedName.style.transform = 'translateY(-100%)';
                             clonedName.style.color = '#5c1d0c';
                             clonedName.style.fontFamily = "'Times New Roman', Times, serif";

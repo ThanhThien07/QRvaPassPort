@@ -78,19 +78,19 @@ html, body {
      * left + width xác định đúng phạm vi vùng "..."
      */
     position: absolute;
-    top: 50.5%;              /* Tâm Y của dòng "Kính mời" (tinh chỉnh lần cuối) */
-    left: 25.96%;             /* Bắt đầu vùng "..." (sau dấu ":") */
-    width: 61.22%;            /* Chiều rộng vùng "..." đến cuối đường chấm */
-    height: 1.8cqw;           /* Khung đủ rộng để chứa tên (1.8x chiều cao chữ) */
-    transform: translateY(-50%); /* Căn giữa dọc: tên nằm NGANG HÀNG với "Kính mời" */
+    top: 52%;                 /* Tinh chỉnh: chân chữ sát trên dòng dấu ba chấm */
+    left: 38%;                 /* Sát sau dấu ":" của "Kính mời :" */
+    width: 49%;                /* Kéo dài đến cuối đường chấm */
+    height: 18px;             /* Cố định đủ chứa font 14px */
+    transform: translateY(-100%); /* Chân chữ nằm SÁT TRÊN dấu ba chấm */
     display: flex;
-    align-items: center;
-    justify-content: center;  /* Căn giữa ngang trong phạm vi vùng "..." */
-    text-align: center;
+    align-items: flex-end;    /* Căn chân chữ xuống đáy khung */
+    justify-content: flex-start; /* Tên bắt đầu sát sau "Kính mời :" */
+    text-align: left;
     overflow: hidden;
     white-space: nowrap;
-    font-size: 1.6cqw;        /* Cỡ chữ vừa phải, dễ đọc, tương đương cỡ chữ "Kính mời" */
-    color: #5c1d0c;           /* Màu đỏ nâu giống chữ "Kính mời" gốc */
+    font-size: 14px;          /* Cố định 14px Times New Roman */
+    color: #5c1d0c;
     font-family: 'Times New Roman', Times, serif;
     font-style: italic;
     font-weight: bold;

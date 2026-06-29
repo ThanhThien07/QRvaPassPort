@@ -196,29 +196,15 @@ if (!$passport) {
     <?php if (!isset($error_msg)): ?>
     <!-- Script xử lý logic tại trang Passport -->
     <script>
-        // TỰ ĐỘNG ĐIỀU CHỈNH CỠ CHỮ TRÊN TRÌNH DUYỆT
-        // Font mặc định = 1.11cqw, chỉ thu nhỏ nếu tên quá dài
+        // CỰ CHỮ CỐ ĐỊNH 14px Times New Roman
         function adjustNameFontSize() {
-            const invitationCard = document.getElementById('theme-thumoi');
             const nameOverlay = document.getElementById('overlay-tm-name');
-            if (invitationCard && nameOverlay) {
-                const actualWidth = invitationCard.offsetWidth;
-                
-                // Cỡ chữ cơ sở = 1.6% chiều rộng card (khớp với 1.6cqw trong CSS)
-                let targetFontSize = actualWidth * 0.016;
-                nameOverlay.style.fontSize = targetFontSize + 'px';
-                
-                // Thu nhỏ dần cỡ chữ nếu tên quá dài làm tràn khung chứa
-                let maxIterations = 30;
-                while (nameOverlay.scrollWidth > nameOverlay.clientWidth + 2 && targetFontSize > 4 && maxIterations > 0) {
-                    targetFontSize -= 0.2;
-                    nameOverlay.style.fontSize = targetFontSize + 'px';
-                    maxIterations--;
-                }
+            if (nameOverlay) {
+                nameOverlay.style.fontSize = '14px';
+                nameOverlay.style.height = '18px';
             }
         }
 
-        // Kích hoạt tự động điều chỉnh cỡ chữ khi tải trang và thay đổi kích thước màn hình
         document.addEventListener('DOMContentLoaded', adjustNameFontSize);
         window.addEventListener('load', adjustNameFontSize);
         window.addEventListener('resize', adjustNameFontSize);
@@ -248,16 +234,14 @@ if (!$passport) {
                     onclone: (clonedDoc) => {
                         const clonedName = clonedDoc.getElementById('overlay-tm-name');
                         if (clonedName) {
-                            // Sao chép toàn bộ style inline từ overlay gốc sang bản clone
                             clonedName.style.cssText = nameOverlay.style.cssText;
-                            clonedName.style.fontSize = currentFontSize;
-                            // Đảm bảo display flex & căn giữa được giữ nguyên
+                            clonedName.style.fontSize = '14px';
+                            clonedName.style.height = '18px';
                             clonedName.style.display = 'flex';
-                            clonedName.style.alignItems = 'center';
-                            clonedName.style.justifyContent = 'center';
-                            clonedName.style.textAlign = 'center';
-                            // GIỮ transform translateY(-50%) để tên ngang hàng đúng với "Kính mời"
-                            clonedName.style.transform = 'translateY(-50%)';
+                            clonedName.style.alignItems = 'flex-end';
+                            clonedName.style.justifyContent = 'flex-start';
+                            clonedName.style.textAlign = 'left';
+                            clonedName.style.transform = 'translateY(-100%)';
                         }
                     }
                 }).then(canvas => {

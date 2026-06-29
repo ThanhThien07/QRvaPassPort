@@ -203,14 +203,14 @@ if (!$passport) {
     <?php if (!isset($error_msg)): ?>
     <!-- Script xử lý logic tại trang Passport -->
     <script>
-        // Tự động điều chỉnh cỡ chữ vừa vặn trong khung chấm (3.8% chiều rộng card)
+        // Tự động điều chỉnh cỡ chữ vừa vặn trong khung chấm (3.25% chiều rộng card)
         function adjustNameFontSize() {
             const container = document.getElementById('theme-thumoi');
             const nameOverlay = document.getElementById('overlay-tm-name');
             if (container && nameOverlay) {
                 const containerWidth = container.offsetWidth;
                 if (containerWidth > 0) {
-                    nameOverlay.style.fontSize = Math.round(containerWidth * 0.038) + 'px';
+                    nameOverlay.style.fontSize = Math.round(containerWidth * 0.0325) + 'px';
                 }
             }
         }

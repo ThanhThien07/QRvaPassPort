@@ -552,6 +552,11 @@ $passports_list = $stmt->fetchAll();
         function submitEditForm(event) {
             event.preventDefault();
             const form = document.getElementById('editForm');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang lưu...';
+
             const formData = new FormData(form);
 
             fetch('ajax_handler.php?action=update', {
@@ -566,11 +571,15 @@ $passports_list = $stmt->fetchAll();
                     location.reload(); // Tải lại trang để cập nhật bảng và biểu đồ
                 } else {
                     alert(response.message);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
                 }
             })
             .catch(err => {
                 console.error(err);
                 alert('Có lỗi xảy ra khi cập nhật thông tin!');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
             });
         }
 
@@ -599,6 +608,11 @@ $passports_list = $stmt->fetchAll();
         function submitAddForm(event) {
             event.preventDefault();
             const form = document.getElementById('addForm');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang thêm...';
+
             const formData = new FormData(form);
 
             fetch('ajax_handler.php?action=add', {
@@ -613,11 +627,15 @@ $passports_list = $stmt->fetchAll();
                     location.reload(); // Tải lại trang
                 } else {
                     alert(response.message);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
                 }
             })
             .catch(err => {
                 console.error(err);
                 alert('Có lỗi xảy ra khi thêm mới thành viên!');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
             });
         }
 
@@ -679,8 +697,10 @@ $passports_list = $stmt->fetchAll();
         // III. REAL-TIME AUTO UPDATES (POLLING EVERY 5 SECONDS)
         // Lưu ID lớn nhất hiện tại làm mốc theo dõi
         let lastId = <?php echo !empty($passports_list) ? intval(max(array_column($passports_list, 'id'))) : 0; ?>;
+        let isPolling = false;
 
         function pollNewRegistrations() {
+            if (isPolling) return;
             // Chỉ thực hiện poll tự động nếu admin không đang thực hiện tìm kiếm hoặc lọc để tránh gây nhiễu dữ liệu đang xem
             const urlParams = new URLSearchParams(window.location.search);
             const isSearching = urlParams.has('search') && urlParams.get('search').trim() !== '';
@@ -690,6 +710,7 @@ $passports_list = $stmt->fetchAll();
                 return; 
             }
 
+            isPolling = true;
             fetch('ajax_handler.php?action=poll_updates&last_id=' + lastId)
                 .then(res => res.json())
                 .then(response => {
@@ -703,6 +724,11 @@ $passports_list = $stmt->fetchAll();
 
                         // Lặp qua các bản ghi mới (mới đăng ký) để chèn lên đầu bảng
                         response.new_records.forEach(row => {
+                            // Tránh hiển thị lặp lại cùng một dòng trên giao diện
+                            if (document.getElementById('row-' + row.id)) {
+                                return;
+                            }
+
                             const tr = document.createElement('tr');
                             tr.className = 'hover:bg-slate-50/40 transition-colors opacity-0 -translate-y-4';
                             tr.id = 'row-' + row.id;
@@ -773,7 +799,10 @@ $passports_list = $stmt->fetchAll();
                         }
                     }
                 })
-                .catch(err => console.error('Lỗi tự động cập nhật Dashboard:', err));
+                .catch(err => console.error('Lỗi tự động cập nhật Dashboard:', err))
+                .finally(() => {
+                    isPolling = false;
+                });
         }
 
         // Thiết lập vòng lặp chạy tự động mỗi 5 giây

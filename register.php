@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
 
                 <!-- Form -->
-                <form action="register.php" method="POST" class="space-y-5">
+                <form action="register.php" method="POST" class="space-y-5" onsubmit="document.getElementById('btn-submit').disabled=true; document.getElementById('btn-submit').innerHTML='<i class=\'fa-solid fa-spinner fa-spin mr-1.5\'></i> Đang tạo...';">
                     
                     <!-- Lựa chọn đối tượng (Role) -->
                     <div>

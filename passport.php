@@ -222,6 +222,7 @@ if (!$passport) {
         // TẢI ẢNH PNG (Chỉ tải ảnh Thư Mời theo yêu cầu)
         function downloadPNG() {
             const invitationCard = document.getElementById('theme-thumoi');
+            const nameOverlay = document.getElementById('overlay-tm-name');
             const btn = document.getElementById('btn-download-png');
             const originalHTML = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang xuất ảnh...';
@@ -234,7 +235,7 @@ if (!$passport) {
                 logging: false,
                 onclone: (clonedDoc) => {
                     const clonedName = clonedDoc.getElementById('overlay-tm-name');
-                    if (clonedName) {
+                    if (clonedName && nameOverlay) {
                         clonedName.style.fontSize = nameOverlay.style.fontSize;
                     }
                 }

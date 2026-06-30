@@ -30,13 +30,8 @@ if (!$passport) {
     $avatar = $passport['avatar'];
     $created_at = date('d/m/Y H:i', strtotime($passport['created_at']));
     
-    // Convert ảnh thư mời sang Base64 để nhúng inline vào HTML (giải quyết triệt để lỗi mất ảnh nền khi tải trên điện thoại)
-    $thumoi_path = 'anh/final-thumoi.png';
-    $thumoi_base64 = '';
-    if (file_exists($thumoi_path)) {
-        $thumoi_data = file_get_contents($thumoi_path);
-        $thumoi_base64 = 'data:image/png;base64,' . base64_encode($thumoi_data);
-    }
+    // Đường dẫn ảnh thư mời gốc (Đã được nén tối ưu xuống ~430KB để chạy mượt mà trên di động)
+    $thumoi_url = 'anh/final-thumoi.png';
     
     // Phân loại nhãn vai trò và màu sắc
     $role_label = ($role === 'student') ? 'Học Sinh' : 'Phụ Huynh';
@@ -130,8 +125,8 @@ if (!$passport) {
                         
                         <!-- TẤM VÉ 1: THƯ MỜI THAM DỰ (Tương ứng file final-thumoi.png) -->
                         <div id="theme-thumoi" class="w-full max-w-[500px] relative mx-auto overflow-hidden rounded-3xl bg-white border-[3px] <?php echo ($role === 'student') ? 'border-sky-500 shadow-sky-500/15' : 'border-amber-500 shadow-amber-500/15'; ?> print:shadow-none print:border-none print:rounded-none print:max-w-full print:w-[170mm] print:mx-auto print:my-[20mm] print:break-inside-avoid">
-                            <!-- Ảnh mẫu gốc dạng inline Base64 để tránh lỗi bảo mật (CORS/Sandbox) trên mobile -->
-                            <img class="w-full h-auto block select-none pointer-events-none" src="<?php echo $thumoi_base64 ?: 'anh/default.png'; ?>" alt="Vé Thư Mời">
+                            <!-- Ảnh mẫu gốc được load trực tiếp từ server để tăng tốc độ tải trang -->
+                            <img class="w-full h-auto block select-none pointer-events-none" src="<?php echo $thumoi_url; ?>" alt="Vé Thư Mời">
                             
                             <!-- Họ tên đè lên (Overlay) - Chân chữ sát dòng dấu chấm bằng Tailwind CSS -->
                             <div class="absolute top-[46.5%] left-[26%] w-[61%] text-center leading-none whitespace-nowrap overflow-hidden text-[#5c1d0c] font-serif italic font-bold pointer-events-none z-10" id="overlay-tm-name">
@@ -264,11 +259,6 @@ if (!$passport) {
                     height: height + 'px'
                 }
             }).then(dataUrl => {
-                const link = document.createElement('a');
-                link.download = 'ThuMoi_<?php echo htmlspecialchars($passport["passport_code"] ?? time()); ?>.png';
-                link.href = dataUrl;
-                link.click();
-                
                 // Khôi phục lại các stylesheets
                 savedLinks.forEach(item => {
                     item.parent.insertBefore(item.link, item.nextSibling);
@@ -276,6 +266,23 @@ if (!$passport) {
 
                 btn.innerHTML = originalHTML;
                 btn.disabled = false;
+
+                if (isMobileDevice()) {
+                    // Nếu là thiết bị di động, hiển thị Modal kèm hướng dẫn nhấn giữ để lưu
+                    const modal = document.getElementById('mobile-download-modal');
+                    const modalImg = document.getElementById('mobile-rendered-img');
+                    if (modal && modalImg) {
+                        modalImg.src = dataUrl;
+                        modal.classList.remove('hidden');
+                        modal.classList.add('flex');
+                    }
+                } else {
+                    // Nếu là máy tính, tự động tải xuống
+                    const link = document.createElement('a');
+                    link.download = 'ThuMoi_<?php echo htmlspecialchars($passport["passport_code"] ?? time()); ?>.png';
+                    link.href = dataUrl;
+                    link.click();
+                }
             }).catch(err => {
                 // Khôi phục lại các stylesheets nếu lỗi
                 savedLinks.forEach(item => {
@@ -288,7 +295,46 @@ if (!$passport) {
                 console.error(err);
             });
         }
+
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+        }
+
+        function closeMobileModal() {
+            const modal = document.getElementById('mobile-download-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
     </script>
     <?php endif; ?>
+
+    <!-- Modal xem trước ảnh để lưu trên thiết bị di động -->
+    <div id="mobile-download-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm transition-opacity duration-300">
+        <div class="relative w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl flex flex-col items-center animate-[scaleIn_0.3s_ease-out]">
+            <!-- Nút đóng -->
+            <button onclick="closeMobileModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <div class="text-center mb-4">
+                <h3 class="text-lg font-extrabold text-slate-800 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-circle-down text-emerald-500"></i> Lưu Thư Mời Của Bạn
+                </h3>
+                <p class="text-xs text-slate-500 mt-1">Vui lòng <strong class="text-slate-800">nhấn giữ (chạm và giữ im)</strong> vào bức ảnh bên dưới để chọn <strong class="text-slate-800">"Lưu hình ảnh"</strong> hoặc <strong class="text-slate-800">"Tải về hình ảnh"</strong>.</p>
+            </div>
+            
+            <!-- Nơi hiển thị ảnh đã xuất -->
+            <div class="w-full border border-slate-100 rounded-2xl overflow-hidden shadow-inner bg-slate-50">
+                <img id="mobile-rendered-img" class="w-full h-auto block select-all cursor-pointer" src="" alt="Thư mời đã xuất">
+            </div>
+            
+            <!-- Nút đóng nhanh bên dưới -->
+            <button onclick="closeMobileModal()" class="mt-5 px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 active:scale-95 transition-all">
+                Đóng lại
+            </button>
+        </div>
+    </div>
 </body>
 </html>

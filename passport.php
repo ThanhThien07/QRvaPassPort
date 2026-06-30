@@ -133,8 +133,8 @@ if (!$passport) {
                             <!-- Ảnh mẫu gốc dạng inline Base64 để tránh lỗi bảo mật (CORS/Sandbox) và chống trượt nền trên mobile -->
                             <img class="w-full h-auto block select-none pointer-events-none" src="<?php echo $thumoi_base64 ?: 'anh/default.png'; ?>" alt="Vé Thư Mời">
                             
-                            <!-- Họ tên đè lên (Overlay) - Chân chữ sát dòng dấu chấm bằng Tailwind CSS -->
-                            <div class="absolute top-[46.5%] left-[26%] w-[61%] text-left leading-none whitespace-nowrap overflow-hidden text-[#5c1d0c] font-serif italic font-bold pointer-events-none z-10" id="overlay-tm-name">
+                            <!-- Họ tên đè lên (Overlay) - Căn chỉnh font-size và vị trí chính xác theo ảnh gốc -->
+                            <div class="absolute top-[46.5%] left-[39%] w-[48%] text-left leading-none whitespace-nowrap overflow-hidden text-[#401308] font-serif italic font-extrabold tracking-tight pointer-events-none z-10" id="overlay-tm-name">
                                 <?php echo htmlspecialchars($fullname); ?>
                             </div>
                         </div>

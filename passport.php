@@ -30,8 +30,13 @@ if (!$passport) {
     $avatar = $passport['avatar'];
     $created_at = date('d/m/Y H:i', strtotime($passport['created_at']));
     
-    // Đường dẫn ảnh thư mời gốc (Đã được nén tối ưu xuống ~430KB để chạy mượt mà trên di động)
-    $thumoi_url = 'anh/final-thumoi.png';
+    // Đọc ảnh thư mời gốc (Đã được nén tối ưu xuống ~430KB) và chuyển thành Base64 để chống trượt nền trên mobile
+    $thumoi_path = 'anh/final-thumoi.png';
+    $thumoi_base64 = '';
+    if (file_exists($thumoi_path)) {
+        $thumoi_data = file_get_contents($thumoi_path);
+        $thumoi_base64 = 'data:image/png;base64,' . base64_encode($thumoi_data);
+    }
     
     // Phân loại nhãn vai trò và màu sắc
     $role_label = ($role === 'student') ? 'Học Sinh' : 'Phụ Huynh';
@@ -125,8 +130,8 @@ if (!$passport) {
                         
                         <!-- TẤM VÉ 1: THƯ MỜI THAM DỰ (Tương ứng file final-thumoi.png) -->
                         <div id="theme-thumoi" class="w-full max-w-[500px] relative mx-auto overflow-hidden rounded-3xl bg-white border-[3px] <?php echo ($role === 'student') ? 'border-sky-500 shadow-sky-500/15' : 'border-amber-500 shadow-amber-500/15'; ?> print:shadow-none print:border-none print:rounded-none print:max-w-full print:w-[170mm] print:mx-auto print:my-[20mm] print:break-inside-avoid">
-                            <!-- Ảnh mẫu gốc được load trực tiếp từ server để tăng tốc độ tải trang -->
-                            <img class="w-full h-auto block select-none pointer-events-none" src="<?php echo $thumoi_url; ?>" alt="Vé Thư Mời">
+                            <!-- Ảnh mẫu gốc dạng inline Base64 để tránh lỗi bảo mật (CORS/Sandbox) và chống trượt nền trên mobile -->
+                            <img class="w-full h-auto block select-none pointer-events-none" src="<?php echo $thumoi_base64 ?: 'anh/default.png'; ?>" alt="Vé Thư Mời">
                             
                             <!-- Họ tên đè lên (Overlay) - Chân chữ sát dòng dấu chấm bằng Tailwind CSS -->
                             <div class="absolute top-[46.5%] left-[26%] w-[61%] text-center leading-none whitespace-nowrap overflow-hidden text-[#5c1d0c] font-serif italic font-bold pointer-events-none z-10" id="overlay-tm-name">
@@ -214,7 +219,7 @@ if (!$passport) {
         window.addEventListener('load', adjustNameFontSize);
         window.addEventListener('resize', adjustNameFontSize);
 
-        // TẢI ẢNH PNG dùng dom-to-image-more (hỗ trợ CSS tốt hơn html2canvas)
+        // TẢI ẢNH PNG dùng dom-to-image-more (Áp dụng Double Render & Base64 để chống mất nền trên mobile)
         async function downloadPNG() {
             const invitationCard = document.getElementById('theme-thumoi');
             const btn = document.getElementById('btn-download-png');
@@ -222,13 +227,16 @@ if (!$passport) {
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Đang xuất ảnh...';
             btn.disabled = true;
 
+            // Đảm bảo phần tử hiển thị 100% trong Viewport trước khi render để tránh lỗi vẽ thiếu tài nguyên của WebKit di động
+            invitationCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
             // Chờ tất cả font chữ load xong
             if (document.fonts && document.fonts.ready) {
                 await document.fonts.ready;
             }
 
-            // Delay nhỏ để layout ổn định (quan trọng trên mobile)
-            await new Promise(r => setTimeout(r, 500));
+            // Delay nhỏ để cuộn ổn định và CSS render xong
+            await new Promise(r => setTimeout(r, 600));
 
             // Tạm thời remove các link stylesheet ngoài để tránh SecurityError từ dom-to-image
             const corsLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).filter(link => {
@@ -248,7 +256,8 @@ if (!$passport) {
             const width  = invitationCard.offsetWidth;
             const height = invitationCard.offsetHeight;
 
-            domtoimage.toPng(invitationCard, {
+            // Cấu hình vẽ: Tắt các CSS nặng (boxShadow, border, borderRadius) bên ngoài để chống lỗi WebKit di động
+            const renderOptions = {
                 quality: 1,
                 width:  width  * scale,
                 height: height * scale,
@@ -256,44 +265,56 @@ if (!$passport) {
                     transform: 'scale(' + scale + ')',
                     transformOrigin: 'top left',
                     width:  width  + 'px',
-                    height: height + 'px'
+                    height: height + 'px',
+                    boxShadow: 'none',
+                    border: 'none',
+                    borderRadius: '0'
                 }
-            }).then(dataUrl => {
-                // Khôi phục lại các stylesheets
-                savedLinks.forEach(item => {
-                    item.parent.insertBefore(item.link, item.nextSibling);
-                });
+            };
 
-                btn.innerHTML = originalHTML;
-                btn.disabled = false;
+            // Mẹo Render 2 lần (Double Render Hack) - Giúp WebKit/Safari di động cache đầy đủ tài nguyên ảnh nền trước khi lấy kết quả thật
+            domtoimage.toPng(invitationCard, renderOptions)
+                .then(() => {
+                    // Lần render thứ 2 để lấy kết quả chính thức đã cache
+                    return domtoimage.toPng(invitationCard, renderOptions);
+                })
+                .then(dataUrl => {
+                    // Khôi phục lại các stylesheets
+                    savedLinks.forEach(item => {
+                        item.parent.insertBefore(item.link, item.nextSibling);
+                    });
 
-                if (isMobileDevice()) {
-                    // Nếu là thiết bị di động, hiển thị Modal kèm hướng dẫn nhấn giữ để lưu
-                    const modal = document.getElementById('mobile-download-modal');
-                    const modalImg = document.getElementById('mobile-rendered-img');
-                    if (modal && modalImg) {
-                        modalImg.src = dataUrl;
-                        modal.classList.remove('hidden');
-                        modal.classList.add('flex');
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+
+                    if (isMobileDevice()) {
+                        // Nếu là thiết bị di động, hiển thị Modal kèm hướng dẫn nhấn giữ để lưu
+                        const modal = document.getElementById('mobile-download-modal');
+                        const modalImg = document.getElementById('mobile-rendered-img');
+                        if (modal && modalImg) {
+                            modalImg.src = dataUrl;
+                            modal.classList.remove('hidden');
+                            modal.classList.add('flex');
+                        }
+                    } else {
+                        // Nếu là máy tính, tự động tải xuống
+                        const link = document.createElement('a');
+                        link.download = 'ThuMoi_<?php echo htmlspecialchars($passport["passport_code"] ?? time()); ?>.png';
+                        link.href = dataUrl;
+                        link.click();
                     }
-                } else {
-                    // Nếu là máy tính, tự động tải xuống
-                    const link = document.createElement('a');
-                    link.download = 'ThuMoi_<?php echo htmlspecialchars($passport["passport_code"] ?? time()); ?>.png';
-                    link.href = dataUrl;
-                    link.click();
-                }
-            }).catch(err => {
-                // Khôi phục lại các stylesheets nếu lỗi
-                savedLinks.forEach(item => {
-                    item.parent.insertBefore(item.link, item.nextSibling);
-                });
+                })
+                .catch(err => {
+                    // Khôi phục lại các stylesheets nếu lỗi
+                    savedLinks.forEach(item => {
+                        item.parent.insertBefore(item.link, item.nextSibling);
+                    });
 
-                alert('Có lỗi xảy ra khi xuất ảnh! Vui lòng thử lại.');
-                btn.innerHTML = originalHTML;
-                btn.disabled = false;
-                console.error(err);
-            });
+                    alert('Có lỗi xảy ra khi xuất ảnh! Vui lòng thử lại.');
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                    console.error(err);
+                });
         }
 
         function isMobileDevice() {

@@ -32,7 +32,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
     fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
     
     // Tiêu đề cột
-    fputcsv($output, ['STT', 'Mã Passport', 'Họ và Tên', 'Vai trò', 'Số điện thoại', 'Ngày đăng ký']);
+    fputcsv($output, ['STT', 'Mã Passport', 'Họ và Tên', 'Vai trò', 'Loại vé', 'Số điện thoại', 'Ngày đăng ký']);
     
     $stmt = $pdo->query("SELECT * FROM `passports` ORDER BY `id` DESC");
     $index = 1;
@@ -42,6 +42,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export') {
             $row['passport_code'],
             $row['fullname'],
             $row['role'] === 'student' ? 'Học sinh' : 'Phụ huynh',
+            $row['role'] === 'student' ? 'vé hs' : 'vé phụ ph',
             "\t" . $row['phone'],
             "\t" . $row['created_at']
         ]);

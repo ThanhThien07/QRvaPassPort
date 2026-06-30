@@ -253,8 +253,9 @@ if (!$passport) {
             corsLinks.forEach(link => link.remove());
 
             const scale = 3; // Xuất ảnh nét gấp 3x
-            const width  = invitationCard.offsetWidth;
-            const height = invitationCard.offsetHeight;
+            const imgElement = invitationCard.querySelector('img');
+            const width  = imgElement ? imgElement.clientWidth : invitationCard.clientWidth;
+            const height = imgElement ? imgElement.clientHeight : invitationCard.clientHeight;
 
             // Cấu hình vẽ: Tắt các CSS nặng (boxShadow, border, borderRadius) bên ngoài để chống lỗi WebKit di động
             const renderOptions = {
@@ -268,7 +269,9 @@ if (!$passport) {
                     height: height + 'px',
                     boxShadow: 'none',
                     border: 'none',
-                    borderRadius: '0'
+                    borderRadius: '0',
+                    margin: '0',
+                    padding: '0'
                 }
             };
 

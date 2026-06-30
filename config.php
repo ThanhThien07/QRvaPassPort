@@ -148,7 +148,7 @@ function syncDatabaseToCsv($pdo) {
             fprintf($fp, chr(0xEF).chr(0xBB).chr(0xBF));
             
             // Tiêu đề các cột
-            fputcsv($fp, ['STT', 'Mã Passport', 'Họ và Tên', 'Vai trò', 'Số điện thoại', 'Ngày đăng ký']);
+            fputcsv($fp, ['STT', 'Mã Passport', 'Họ và Tên', 'Vai trò', 'Loại vé', 'Số điện thoại', 'Ngày đăng ký']);
             
             $index = 1;
             foreach ($records as $row) {
@@ -157,6 +157,7 @@ function syncDatabaseToCsv($pdo) {
                     $row['passport_code'],
                     $row['fullname'],
                     $row['role'] === 'student' ? 'Học sinh' : 'Phụ huynh',
+                    $row['role'] === 'student' ? 'vé hs' : 'vé phụ ph',
                     "\t" . $row['phone'],
                     "\t" . $row['created_at']
                 ]);

@@ -134,7 +134,7 @@ if (!$passport) {
                             <img class="w-full h-auto block select-none pointer-events-none" src="<?php echo $thumoi_base64 ?: 'anh/default.png'; ?>" alt="Vé Thư Mời">
                             
                             <!-- Họ tên đè lên (Overlay) - Căn chỉnh font-size và vị trí chính xác theo ảnh gốc -->
-                            <div class="absolute top-[46.5%] left-[39%] w-[48%] text-left leading-none whitespace-nowrap overflow-hidden text-[#401308] font-serif italic font-extrabold tracking-tight pointer-events-none z-10" id="overlay-tm-name">
+                            <div class="absolute top-[46.5%] left-[36%] w-[51%] text-left leading-none whitespace-nowrap overflow-hidden text-[#401308] font-serif italic font-extrabold tracking-tight pointer-events-none z-10" id="overlay-tm-name">
                                 <?php echo htmlspecialchars($fullname); ?>
                             </div>
                         </div>
